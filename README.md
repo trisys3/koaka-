@@ -14,7 +14,8 @@ Of course, your thing must know what to do with this request. That is where this
 
     koaka thing -i [domain name]
 
-# Use it as a middleware (NOTE: The example below requires either [babel][] or the latest [webpack][]):
+# Use it as a middleware
+*NOTE: The example below requires either [babel][] or the latest [webpack][]*:
 
 server.js:
 
@@ -53,7 +54,7 @@ koakaThing.behaviors.push({
 });
 ```
 
-Some behaviors may have been left out of the last example. Also, the timimg may need to be adjusted, or tracking with grocerystore.com set up.
+Some behaviors may have been left out of the last example. Also, the timing may need to be adjusted, or tracking with grocerystore.com set up.
 
 ## Comprehensive API:
 
@@ -62,7 +63,7 @@ Some behaviors may have been left out of the last example. Also, the timimg may 
 `koaka`
 `koaka thing [[--name || -n] name] [[--ip || -i] domain name || IP]`: Start up a simple koa server and start taking requests from localhost and optionally a domain name or IP address. If using a domain or IP, the device must be accessible from there.
 
-`koaka thing behavior(s) [[--name || -n] server name] -- [[--behaviors || -b] ...behavior list]: Add one or multiple behaviors to an already-accessible koaka server. The behavior can also be called from the CLI with the next command, with or without running the server. This is generally the same as preconfiguring them when creating the server. See that for the API to use for the behaviors, generally equivalent to `[name] --request(s) [URL] [name] --command(s) [command]`, etc. This option probably won't be used that much, as it is much easier to preconfigure them on the server or send requests directly. For example:
+`koaka thing behavior(s) [[--name || -n] server name] -- [[--behaviors || -b] ...behavior list]`: Add one or multiple behaviors to an already-accessible koaka server. The behavior can also be called from the CLI with the next command, with or without running the server. This is generally the same as preconfiguring them when creating the server. See that for the API to use for the behaviors, generally equivalent to `[name] --request(s) [URL] [name] --command(s) [command]`, etc. This option probably won't be used that much, as it is much easier to preconfigure them on the server or send requests directly. For example:
 
     koaka thing behavior -n koaka.my -- getEggs --request '//grocerystore.com/eggs' tellRobotButlerToGetEggs --requests '//robotbutler.my/open-door' '//robotbutler.my/pick-up-package' '//robotbutler.my/take-eggs-to-refrigerator'
 
@@ -153,7 +154,7 @@ The `koaka-thing` component was the first part of the `koaka` framework that I c
 
 [koaka-core][] will be the "guts" of the framework, allowing a common core between all the different components. Among other things, it will include the `koaka` executable, which the other components, including this one, will use.
 
-The `koaka` framework will also allow [plugins][koaka-plugins]. The API for that is coming soon, as well,
+The `koaka` framework will also allow [plugins][koaka-plugins]. The API for that is coming soon, as well.
 
 For now, the main resource for questions is the [issues][] page.
 ```
