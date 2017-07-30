@@ -1,1 +1,167 @@
-# koaka-thing
+## koaka-thing
+
+*This system is not quite finished yet. When it is, it will be the best thing since sliced bread, but until then, please be patient.*
+
+The koaka framework is a batch-processing system for the Internet of Things. It allows you to control your thing by sending it HTTP requests. Your thing will run some commands on itself and deliver you the result when it is finished.
+
+Of course, your thing must know what to do with this request. That is where this module comes in. It is a simple koa server that comes configured with a few routes for administration and logging, and one special POST route, `/teach`. This route is only accessible via localhost by default, and I suggest you be very careful about opening it up. The `/teach` route takes a JSON body with a list of behaviors to allow. This route can also be configured as a GET request or command, details below. The module also includes middleware so youncan use in a bigger server.
+
+# Get koaka-thing
+
+    npm i koaka-thing
+
+# Use it as a server:
+
+    koaka thing -i [domain name]
+
+# Use it as a middleware (NOTE: The example below requires either [babel][] or the latest [webpack][]):
+
+server.js:
+
+```
+const Koa = import 'koa';
+const koakaThing = import 'koaka-thing';
+
+const server = new Koa();
+
+server.use(koakaThing.middleware);
+
+// preconfigure a behavior with a request
+koakaThing.behaviors.push({
+  name: 'requestEggs',
+  request: '//grocerystore.com/eggs',
+});
+
+// preconfigure a behavior with multiple requests
+koakaThing.behaviors.push({
+  name: 'tellRobotButlerToRetrieveEggs',
+  requests: [
+    '//robotbutler.my/open-door',
+    '//robotbutler.my/pick-up-package',
+    '//robotbutler.my/take-eggs-to-refrigerator',
+  ],
+});
+
+// preconfigure a behavior from multiple previous behaviors
+koakaThing.behaviors.push({
+  name: 'getEggsWithoutGettingUpFromChair',
+  commands: [
+    'koaka do requestEggs',
+    'sleep 2h',
+    'koaka do controlRobot',
+  ],
+});
+```
+
+Some behaviors may have been left out of the last example. Also, the timimg may need to be adjusted, or tracking with grocerystore.com set up.
+
+## Comprehensive API:
+
+# CLI
+
+`koaka`
+`koaka thing [[--name || -n] name] [[--ip || -i] domain name || IP]`: Start up a simple koa server and start taking requests from localhost and optionally a domain name or IP address. If using a domain or IP, the device must be accessible from there.
+
+`koaka thing behavior(s) [[--name || -n] server name] -- [[--behaviors || -b] ...behavior list]: Add one or multiple behaviors to an already-accessible koaka server. The behavior can also be called from the CLI with the next command, with or without running the server. This is generally the same as preconfiguring them when creating the server. See that for the API to use for the behaviors, generally equivalent to `[name] --request(s) [URL] [name] --command(s) [command]`, etc. This option probably won't be used that much, as it is much easier to preconfigure them on the server or send requests directly. For example:
+
+    koaka thing behavior -n koaka.my -- getEggs --request '//grocerystore.com/eggs' tellRobotButlerToGetEggs --requests '//robotbutler.my/open-door' '//robotbutler.my/pick-up-package' '//robotbutler.my/take-eggs-to-refrigerator'
+
+`koaka thing do [name]`: Call a command created via the `/teach` endpoint, documented below, or the `behavior(s)` command, documented above. For example, if `getEggsWithoutGettingUpFromChair` is created through either of these means, it can be called with:
+
+    koaka do getEggsWithoutGettingUpFromChair
+
+# node API
+
+```
+const Koa = import 'koa';
+const request = import 'request';
+const koakaThing = import 'koaka-thing'
+
+const {
+  middleware,
+  server,
+
+  behavior,
+  behaviors,
+
+  command,
+  commands,
+} = koakaThing;
+
+behavior === behaviors;
+command === commands;
+
+const mwServer = new Koa();
+mwServer.use(middleware);
+mwServer.listen(3000);
+
+request.post('http://localhost:3000/teach', {
+  json: true,
+  body: {
+    behaviors: [{
+      name: 'getEggs',
+      request: '//grocerystore.com/eggs',
+    },
+    {
+      name: 'tellRobotButlerToRetrieveEggs',
+      requests: [
+        '//robotbutler.my/open-door',
+        '//robotbutler.my/pick-up-package',
+        '//robotbutler.my/take-eggs-to-refrigerator',
+      ],
+    }],
+  },
+});
+// "request" & "requests" are the same, and both take a string or array of
+// strings. "behavior" & "behaviors" are also the same, and take an object or
+// an array of objects. If an object, and it has a "name" property, that is
+// assumed to be the name of the behavior. Otherwise, the object is assumed to
+// be a hash of behaviors, with each key as the name, as below.
+
+request.post('http://localhost:3000/teach', {
+  json: true,
+  body: {
+    behavior: {
+      getEggsWithoutGettingUpFromChair: {
+        commands: [
+          'koaka do requestEggs',
+          'sleep 2h',
+          'koaka do controlRobot',
+        ],
+      },
+    },
+  },
+});
+
+// If the server is accessible via http://koaka.my, we can call one of these
+// behaviors via the CLI, as documented above, or with an HTTP request, like
+// so:
+request.get('http://koaka.my/getEggsWithoutGettingUpFromChair');
+
+// {server} is a simple koa server with several middlewares like compression,
+// administration routes like /login, and the {middleware} middleware from
+// above. Using it like this is the same as calling `koaka thing -n koaka.my`.
+server('koaka.my');
+
+## Resources
+
+The `koaka-thing` component was the first part of the `koaka` framework that I created, because I believe it will turn out to be the most important. The other components will come soon.
+
+[koaka-owner-client][] will be  a lightweight client for your devices that mainly communicates with this module.
+
+[koaka-owner-server][] will be another small koa server that will sit between your things and you, allowing easier management and coordination between your various things.
+
+[koaka-core][] will be the "guts" of the framework, allowing a common core between all the different components. Among other things, it will include the `koaka` executable, which the other components, including this one, will use.
+
+The `koaka` framework will also allow [plugins][koaka-plugins]. The API for that is coming soon, as well,
+
+For now, the main resource for questions is the [issues][] page.
+```
+
+[babel]: //babeljs.io 'babel home site'
+[webpack]: //webpack.js.org 'webpack home site'
+[koaka-owner-client]: //github.com/trisys3/koaka-owner-client
+[koaka-owner-server]: //github.com/trisys3/koaka-owner-server
+[koaka-core]: //github.com/trisys3/koaka-core
+[koaka-plugins]: //npms.io/search?q=keywords:koaka
+[issues]: //github.com/trisys3/koaka-thing/issues
