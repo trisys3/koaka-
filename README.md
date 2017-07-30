@@ -15,7 +15,7 @@ Of course, your thing must know what to do with this request. That is where this
     koaka thing -i [domain name]
 
 ## Use it as a middleware
-*NOTE: The example below requires either [babel][] or the latest [webpack][]*:
+*NOTE: The example below requires either [babel][babel] or the latest [webpack][webpack]*:
 
 server.js:
 
@@ -159,9 +159,9 @@ The `koaka-thing` component was the first part of the `koaka` framework that I c
 
 [koaka-core][koaka_core] will be the "guts" of the framework, allowing a common core between all the different components. Among other things, it will include the `koaka` executable, which the other components, including this one, will use.
 
-The `koaka` framework will also allow [plugins][koaka_plugins][]. The API for that is coming soon, as well.
+The `koaka` framework will also allow [plugins][koaka_plugins]. The API for that is coming soon, as well.
 
-For now, the main resource for questions is the [issues][] page.
+For now, the main resource for questions is the [issues][issues] page.
 ```
 
 [babel]: http://babeljs.io 'babel home site'
