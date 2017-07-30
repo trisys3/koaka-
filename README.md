@@ -1,4 +1,4 @@
-## koaka-thing
+# koaka-thing
 
 *This system is not quite finished yet. When it is, it will be the best thing since sliced bread, but until then, please be patient.*
 
@@ -6,15 +6,15 @@ The koaka framework is a batch-processing system for the Internet of Things. It 
 
 Of course, your thing must know what to do with this request. That is where this module comes in. It is a simple koa server that comes configured with a few routes for administration and logging, and one special POST route, `/teach`. This route is only accessible via localhost by default, and I suggest you be very careful about opening it up. The `/teach` route takes a JSON body with a list of behaviors to allow. This route can also be configured as a GET request or command, details below. The module also includes middleware so youncan use in a bigger server.
 
-# Get koaka-thing
+## Get koaka-thing
 
     npm i koaka-thing
 
-# Use it as a server:
+## Use it as a server:
 
     koaka thing -i [domain name]
 
-# Use it as a middleware
+## Use it as a middleware
 *NOTE: The example below requires either [babel][] or the latest [webpack][]*:
 
 server.js:
@@ -52,13 +52,12 @@ koakaThing.behaviors.push({
     'koaka do controlRobot',
   ],
 });
+// (The timing may be a little off here. You may want to set up tracking with the grocery store.)
 ```
 
-Some behaviors may have been left out of the last example. Also, the timing may need to be adjusted, or tracking with grocerystore.com set up.
+# Comprehensive API:
 
-## Comprehensive API:
-
-# CLI
+## CLI
 
 `koaka`
 `koaka thing [[--name || -n] name] [[--ip || -i] domain name || IP]`: Start up a simple koa server and start taking requests from localhost and optionally a domain name or IP address. If using a domain or IP, the device must be accessible from there.
@@ -84,9 +83,6 @@ const {
 
   behavior,
   behaviors,
-
-  command,
-  commands,
 } = koakaThing;
 
 behavior === behaviors;
@@ -151,8 +147,9 @@ request.get('http://koaka.my/getEggsWithoutGettingUpFromChair');
 // administration routes like /login, and the {middleware} middleware from
 // above. Using it like this is the same as calling `koaka thing -n koaka.my`.
 server('koaka.my');
+```
 
-## Resources
+# Resources
 
 The `koaka-thing` component was the first part of the `koaka` framework that I created, because I believe it will turn out to be the most important. The other components will come soon.
 
