@@ -159,7 +159,7 @@ The `koaka-thing` component was the first part of the `koaka` framework that I c
 
 [koaka-core][] will be the "guts" of the framework, allowing a common core between all the different components. Among other things, it will include the `koaka` executable, which the other components, including this one, will use.
 
-The `koaka` framework will also allow [plugins][koaka-plugins]. The API for that is coming soon, as well.
+The `koaka` framework will also allow [koaka-plugins][]. The API for that is coming soon, as well.
 
 For now, the main resource for questions is the [issues][] page.
 ```
