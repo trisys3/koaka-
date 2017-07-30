@@ -153,21 +153,21 @@ server('koaka.my');
 
 The `koaka-thing` component was the first part of the `koaka` framework that I created, because I believe it will turn out to be the most important. The other components will come soon.
 
-[koaka-owner-client][] will be  a lightweight client for your devices that mainly communicates with this module.
+[koaka-owner-client][koaka_owner_client] will be  a lightweight client for your devices that mainly communicates with this module.
 
-[koaka-owner-server][] will be another small koa server that will sit between your things and you, allowing easier management and coordination between your various things.
+[koaka-owner-server][koaka_owner_server] will be another small koa server that will sit between your things and you, allowing easier management and coordination between your various things.
 
-[koaka-core][] will be the "guts" of the framework, allowing a common core between all the different components. Among other things, it will include the `koaka` executable, which the other components, including this one, will use.
+[koaka-core][koaka_core] will be the "guts" of the framework, allowing a common core between all the different components. Among other things, it will include the `koaka` executable, which the other components, including this one, will use.
 
-The `koaka` framework will also allow [koaka-plugins][]. The API for that is coming soon, as well.
+The `koaka` framework will also allow [plugins][koaka_plugins][]. The API for that is coming soon, as well.
 
 For now, the main resource for questions is the [issues][] page.
 ```
 
 [babel]: http://babeljs.io 'babel home site'
 [webpack]: http://webpack.js.org 'webpack home site'
-[koaka-owner-client]: http://github.com/trisys3/koaka-owner-client
-[koaka-owner-server]: http://github.com/trisys3/koaka-owner-server
-[koaka-core]: http://github.com/trisys3/koaka-core
-[koaka-plugins]: http://npms.io/search?q=keywords:koaka
+[koaka_owner_client]: http://github.com/trisys3/koaka-owner-client
+[koaka_owner_server]: http://github.com/trisys3/koaka-owner-server
+[koaka_core]: http://github.com/trisys3/koaka-core
+[koaka_plugins]: http://npms.io/search?q=keywords:koaka
 [issues]: http://github.com/trisys3/koaka-thing/issues
