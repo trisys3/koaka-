@@ -164,8 +164,8 @@ The `koaka` framework will also allow [plugins][koaka_plugins]. The API for that
 For now, the main resource for questions is the [issues][issues] page.
 ```
 
-[babel]: http://babeljs.io 'babel home site'
-[webpack]: http://webpack.js.org 'webpack home site'
+[babel]: http://babeljs.io
+[webpack]: http://webpack.js.org
 [koaka_owner_client]: http://github.com/trisys3/koaka-owner-client
 [koaka_owner_server]: http://github.com/trisys3/koaka-owner-server
 [koaka_core]: http://github.com/trisys3/koaka-core
