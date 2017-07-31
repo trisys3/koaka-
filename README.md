@@ -43,7 +43,7 @@ koakaThing.behaviors.push({
   ],
 });
 
-// preconfigure a behavior from multiple previous behaviors
+// preconfigure a behavior from previous behaviors
 koakaThing.behaviors.push({
   name: 'getEggsWithoutGettingUpFromChair',
   commands: [
@@ -52,7 +52,8 @@ koakaThing.behaviors.push({
     'koaka do controlRobot',
   ],
 });
-// (The timing may be a little off here. You may want to set up tracking with the grocery store.)
+// (The timing may be a little off here. You may want to set up tracking with
+// the grocery store.)
 ```
 
 # Comprehensive API:
