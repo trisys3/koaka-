@@ -1,0 +1,31 @@
+{
+  "name": "koaka-thing",
+  "version": "0.0.1",
+  "description": "\"Thing\" server for the koaka Internet of Things framework",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "babel-node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trisys3/koaka-thing.git"
+  },
+  "keywords": [
+    "internet-of-things",
+    "iot",
+    "iot-framework"
+  ],
+  "author": "Sean Moran",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/trisys3/koaka-thing/issues"
+  },
+  "homepage": "https://github.com/trisys3/koaka-thing#readme",
+  "devDependencies": {
+    "jasmine": "^2.7.0"
+  },
+  "dependencies": {
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-stage-3": "^6.24.1"
+  }
+}
