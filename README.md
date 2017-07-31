@@ -4,7 +4,7 @@
 
 The koaka framework is a batch-processing system for the Internet of Things. It allows you to control your thing by sending it HTTP requests. Your thing will run some commands on itself and deliver you the result when it is finished.
 
-Of course, your thing must know what to do with this request. That is where this module comes in. It is a simple koa server that comes configured with a few routes for administration and logging, and one special POST route, `/teach`. This route is only accessible via localhost by default, and I suggest you be very careful about opening it up. The `/teach` route takes a JSON body with a list of behaviors to allow. This route can also be configured as a GET request or command, details below. The module also includes middleware so youncan use in a bigger server.
+Of course, your thing must know what to do with this request. That is where this module comes in. It is a simple koa server that comes configured with a few routes for administration and logging, and one special POST route, `/teach`. This route is only accessible via localhost by default, and I suggest you be very careful about opening it up. The `/teach` route takes a JSON body with a list of behaviors to allow. This route can also be configured as a GET request or command, details below. The module also includes middleware so you can use in a bigger server.
 
 ## Get koaka-thing
 
