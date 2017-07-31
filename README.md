@@ -60,9 +60,9 @@ koakaThing.behaviors.push({
 ## CLI
 
 `koaka`
-`koaka thing [[--name || -n] name] [[--ip || -i] domain name || IP]`: Start up a simple koa server and start taking requests from localhost and optionally a domain name or IP address. If using a domain or IP, the device must be accessible from there.
+`koaka thing [[--name || -n] name] [[--ip || -i] domain name || IP]`: Start up a simple koa server and start taking requests. If using a domain or IP, the device must be accessible from there.
 
-`koaka thing behavior(s) [[--name || -n] server name] -- [[--behaviors || -b] ...behavior list]`: Add one or multiple behaviors to an already-accessible koaka server. The behavior can also be called from the CLI with the next command, with or without running the server. This is generally the same as preconfiguring them when creating the server. See that for the API to use for the behaviors, generally equivalent to `[name] --request(s) [URL] [name] --command(s) [command]`, etc. This option probably won't be used that much, as it is much easier to preconfigure them on the server or send requests directly. For example:
+`koaka thing behavior(s) [[--name || -n] server name] -- [[--behaviors || -b] ...behavior list]`: Add one or multiple behaviors. The behavior can also be called from the CLI with a later command, with or without running the server. Generally the same as preconfiguring them when creating the server: `[name] --request(s) [URL] [name] --command(s) [command]`, etc. This option probably won't be used that much, as it is much easier to preconfigure or send requests directly to the server. For example:
 
     koaka thing behavior -n koaka.my -- getEggs --request '//grocerystore.com/eggs' tellRobotButlerToGetEggs --requests '//robotbutler.my/open-door' '//robotbutler.my/pick-up-package' '//robotbutler.my/take-eggs-to-refrigerator'
 
