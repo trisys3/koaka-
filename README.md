@@ -20,8 +20,8 @@ Of course, your thing must know what to do with this request. That is where this
 server.js:
 
 ```
-const Koa = import 'koa';
-const koakaThing = import 'koaka-thing';
+import Koa from Koa;
+import koakaThing from 'koaka-thing';
 
 const server = new Koa();
 
@@ -74,20 +74,11 @@ koakaThing.behaviors.push({
 # node API
 
 ```
-const Koa = import 'koa';
-const request = import 'request';
-const koakaThing = import 'koaka-thing'
-
-const {
-  middleware,
-  server,
-
-  behavior,
-  behaviors,
-} = koakaThing;
+import Koa from 'koa';
+import request from 'request';
+import {middleware, server, behavior, behaviors} from 'koaka-thing';
 
 behavior === behaviors;
-command === commands;
 
 const mwServer = new Koa();
 mwServer.use(middleware);
