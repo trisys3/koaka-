@@ -25,7 +25,7 @@ import koakaThing from 'koaka-thing';
 
 const server = new Koa();
 
-server.use(koakaThing.middleware);
+server.use(koakaThing.teach);
 
 // preconfigure a behavior with a request
 koakaThing.behaviors.push({
@@ -76,12 +76,12 @@ koakaThing.behaviors.push({
 ```
 import Koa from 'koa';
 import request from 'request';
-import {middleware, server, behavior, behaviors} from 'koaka-thing';
+import {teach, server, behavior, behaviors} from 'koaka-thing';
 
 behavior === behaviors;
 
 const mwServer = new Koa();
-mwServer.use(middleware);
+mwServer.use(teach);
 mwServer.listen(3000);
 
 request.post('http://localhost:3000/teach', {
@@ -136,7 +136,7 @@ console.log(behaviors[2]);
 request.get('http://koaka.my/getEggsWithoutGettingUpFromChair');
 
 // {server} is a simple koa server with several middlewares like compression,
-// administration routes like /login, and the {middleware} middleware from
+// administration routes like /login, and the teach middleware from
 // above. Using it like this is the same as calling `koaka thing -n koaka.my`.
 server('koaka.my');
 ```
