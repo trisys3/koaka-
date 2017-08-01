@@ -20,21 +20,23 @@ Of course, your thing must know what to do with this request. That is where this
 server.js:
 
 ```
-import Koa from Koa;
-import koakaThing from 'koaka-thing';
+import Koa from 'koa';
+import {teach} from 'koaka-thing';
 
 const server = new Koa();
 
-server.use(koakaThing.teach);
+server.use(teach());
+
+const behaviors = server.behaviors;
 
 // preconfigure a behavior with a request
-koakaThing.behaviors.push({
+behaviors.push({
   name: 'requestEggs',
   request: '//grocerystore.com/eggs',
 });
 
 // preconfigure a behavior with multiple requests
-koakaThing.behaviors.push({
+behaviors.push({
   name: 'tellRobotButlerToRetrieveEggs',
   requests: [
     '//robotbutler.my/open-door',
@@ -44,7 +46,7 @@ koakaThing.behaviors.push({
 });
 
 // preconfigure a behavior from previous behaviors
-koakaThing.behaviors.push({
+behaviors.push({
   name: 'getEggsWithoutGettingUpFromChair',
   commands: [
     'koaka do requestEggs',
@@ -76,13 +78,15 @@ koakaThing.behaviors.push({
 ```
 import Koa from 'koa';
 import request from 'request';
-import {teach, server, behavior, behaviors} from 'koaka-thing';
-
-behavior === behaviors;
+import Koaka, {teach} from 'koaka-thing';
 
 const mwServer = new Koa();
-mwServer.use(teach);
+mwServer.use(teach());
 mwServer.listen(3000);
+
+const {behavior, behaviors} = mwServer;
+
+behavior === behaviors;
 
 request.post('http://localhost:3000/teach', {
   json: true,
@@ -101,16 +105,15 @@ request.post('http://localhost:3000/teach', {
     }],
   },
 });
-// "request" & "requests" are the same, and both take a string or array of
-// strings. "behavior" & "behaviors" are also the same, and take an object or
-// an array of objects. If an object, and it has a "name" property, that is
-// assumed to be the name of the behavior. Otherwise, the object is assumed to
-// be a hash of behaviors, with each key as the name, as below.
+// "behavior" & "behaviors" are the same, and are added onto the server by the
+teach middleware. They take an object. If it has a "name" property, that is
+// assumed to be the name of the behavior. Otherwise, it is assumed to
+// be a hash of behaviors, with each key as a name.
 
 // The behaviors are kept around for convenience. They can be changed from
 // the outside, but `koaka` keeps track of the state.
 console.log(behaviors);
-// [ { name: 'getEggs', request: [ 'http://grocerystore.com/eggs' ], requests: [ 'http://grocerystore.com/eggs' ] }, { name: 'tellRobotButlerToRetrieveEggs', command: ['koaka do requestEggs', 'sleep 2h', 'koaka do controlRobot'], commands: ['koaka do requestEggs', 'sleep 2h', 'koaka do controlRobot' ] } ]
+// { getEggs: { request: [ 'http://grocerystore.com/eggs' ], requests: [ 'http://grocerystore.com/eggs' ] }, tellRobotButlerToRetrieveEggs: { command: ['koaka do requestEggs', 'sleep 2h', 'koaka do controlRobot'], commands: ['koaka do requestEggs', 'sleep 2h', 'koaka do controlRobot' ] } }
 
 request.post('http://localhost:3000/teach', {
   json: true,
@@ -135,9 +138,9 @@ console.log(behaviors[2]);
 // so:
 request.get('http://koaka.my/getEggsWithoutGettingUpFromChair');
 
-// {server} is a simple koa server with several middlewares like compression,
+// The {server} is a simple koa server with several middlewares like compression,
 // administration routes like /login, and the teach middleware from
-// above. Using it like this is the same as calling `koaka thing -n koaka.my`.
+// above. For example, this is the same as calling `koaka thing -n koaka.my`:
 server('koaka.my');
 ```
 
