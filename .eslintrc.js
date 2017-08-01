@@ -1,10 +1,14 @@
 'use strict';
 
+exports.parser = 'babel-eslint';
+
 exports.parserOptions = {
   ecmaVersion: 8,
-  module: true,
-  jsx: true,
-  experimentalObjectRestSpread: true,
+  sourceType: 'module',
+  ecmaFeatures: {
+    jsx: true,
+    experimentalObjectRestSpread: true,
+  },
 };
 
 exports.env = {
@@ -191,7 +195,7 @@ exports.rules = {
 
 exports.overrides = [
   {
-    files: '**.spec.js',
-    env: {jasmine: true},
+    files: '**.test.js',
+    env: {jest: true},
   },
 ];
