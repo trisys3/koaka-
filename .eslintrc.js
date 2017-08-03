@@ -17,6 +17,8 @@ exports.env = {
   es6: true,
 };
 
+exports.plugins = ['babel'];
+
 exports.rules = {
   // possible errors
   'for-direction': 2,
@@ -49,10 +51,9 @@ exports.rules = {
   'valid-typeof': 2,
 
   // best practices
-  'array-callback-return': 1,
   'class-methods-use-this': 1,
   curly: 2,
-  'dot-location': 2,
+  'dot-location': [1, 'property'],
   'dot-notation': 1,
   eqeqeq: [2, 'smart'],
   'no-case-declarations': 2,
@@ -64,7 +65,7 @@ exports.rules = {
   'no-fallthrough': 1,
   'no-global-assign': 2,
   'no-implied-eval': 2,
-  'no-invalid-this': 1,
+  'babel/no-invalid-this': 1,
   'no-lone-blocks': 1,
   'no-loop-func': 1,
   'no-multi-spaces': 1,
@@ -124,7 +125,18 @@ exports.rules = {
   'func-names': 1,
   'linebreak-style': 1,
   'key-spacing': 1,
-  'keyword-spacing': 1,
+  'keyword-spacing': [
+    1,
+    {
+      after: false,
+      overrides: {
+        from: {after: true},
+        export: {after: true},
+        try: {after: true},
+        return: {after: true},
+      },
+    },
+  ],
   'max-statements-per-line': 2,
   'new-cap': 1,
   'new-parens': 1,
@@ -137,7 +149,7 @@ exports.rules = {
   'no-unneeded-ternary': [1, {defaultAssignment: false}],
   'no-whitespace-before-property': 1,
   'object-curly-newline': 1,
-  'object-curly-spacing': 1,
+  // 'babel/object-curly-spacing': 1,
   'one-var': [2, 'never'],
   'operator-assignment': 2,
   'operator-linebreak': 1,
@@ -145,7 +157,7 @@ exports.rules = {
   'quote-props': [1, 'as-needed'],
   quotes: [1, 'single', {avoidEscape: true}],
   // 'require-jsdoc': 1,
-  semi: [1, 'always', {omitLastInOneLineBlock: true}],
+  'babel/semi': [1, 'always', {omitLastInOneLineBlock: true}],
   'space-before-blocks': 1,
   'space-before-function-paren': [
     1,
