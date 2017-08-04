@@ -5,10 +5,18 @@ export default vhosts => {
     vhosts = [vhosts];
   }
 
+  if(!Array.isArray(vhosts)) {
+    return (ctx, next) => next();
+  }
+
   vhosts = vhosts.filter(host => typeof host === 'string');
 
-  return (ctx, next) => {
-    if(filterHost(vhosts, ctx.hostname)) {
+  return ({hostname}, next) => {
+    if(!vhosts.length) {
+      return next();
+    }
+
+    if(filterHost(vhosts, hostname)) {
       return next();
     }
   };
