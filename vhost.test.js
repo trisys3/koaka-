@@ -1,4 +1,4 @@
-import koa from 'koa';
+import Koa from 'koa';
 
 import vhost, {filterHost as filter} from './vhost';
 
@@ -44,4 +44,49 @@ describe('when filtering virtual hosts', () => {
       expect(filter(filterHosts, reqHost)).toBeFalsy();
     });
   });
+});
+
+describe('virtual host middleware', () => {
+  const request = require('request');
+
+  const usedAfterMw = jest.fn();
+
+  let koa;
+  let server;
+
+  beforeEach(() => {
+    koa = new Koa();
+    server = koa.listen(3000);
+  });
+
+  afterEach(() => {
+    usedAfterMw.mockClear();
+    server.close();
+  });
+
+  test('should defer to other middleware when the domain matches', () => {
+    expect.assertions(1);
+    koa.use(vhost('localhost'))
+      .use(afterMw);
+
+    const testReq = new Promise(resolve =>
+      request('http://localhost:3000', () => resolve()));
+
+    return testReq.then(() => expect(usedAfterMw.mock.calls.length).toBe(1));
+  });
+
+  test('should not defer to other middleware when the domain does not match', () => {
+    expect.assertions(1);
+    koa.use(vhost('nonexistent.domain.my'))
+      .use(afterMw);
+
+    const testReq = new Promise(resolve =>
+      request('http://localhost:3000', () => resolve()));
+
+    return testReq.then(() => expect(usedAfterMw.mock.calls.length).toBe(0));
+  });
+
+  function afterMw() {
+    usedAfterMw();
+  }
 });
