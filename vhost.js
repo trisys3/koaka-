@@ -4,9 +4,8 @@ export default vhosts => {
   if(typeof vhosts === 'string') {
     vhosts = [vhosts];
   }
-
   if(!Array.isArray(vhosts)) {
-    return (ctx, next) => next();
+    vhosts = [];
   }
 
   vhosts = vhosts.filter(host => typeof host === 'string');
