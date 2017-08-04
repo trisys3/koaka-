@@ -64,6 +64,17 @@ describe('virtual host middleware', () => {
     server.close();
   });
 
+  test('should defer to other middleware when no domain is passed', () => {
+    expect.assertions(1);
+    koa.use(vhost())
+      .use(afterMw);
+
+    const testReq = new Promise(resolve =>
+      request('http://localhost:3000', () => resolve()));
+
+    return testReq.then(() => expect(usedAfterMw.mock.calls.length).toBe(1));
+  });
+
   test('should defer to other middleware when the domain matches', () => {
     expect.assertions(1);
     koa.use(vhost('localhost'))
