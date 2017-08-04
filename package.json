@@ -4,7 +4,7 @@
   "description": "\"Thing\" server for the koaka Internet of Things framework",
   "main": "dist/index.js",
   "scripts": {
-    "test": "babel-node test.js"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -29,6 +29,7 @@
     "babel-preset-env": "^1.6.0",
     "babel-preset-stage-2": "^6.24.1",
     "babel-preset-stage-3": "^6.24.1",
-    "koa": "^2.3.0"
+    "koa": "^2.3.0",
+    "koa-compress": "^2.0.0"
   }
 }
