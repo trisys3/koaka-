@@ -1,40 +1,28 @@
 export {filterHost};
 
-export default vhosts => {
-  if(typeof vhosts === 'string') {
-    vhosts = [vhosts];
+export default vhosts => ({hostname}, next) => {
+  if(filterHost(vhosts, hostname)) {
+    return next();
   }
-  if(!Array.isArray(vhosts)) {
-    vhosts = [];
-  }
-
-  vhosts = vhosts.filter(host => typeof host === 'string');
-
-  return ({hostname}, next) => {
-    if(!vhosts.length) {
-      return next();
-    }
-
-    if(filterHost(vhosts, hostname)) {
-      return next();
-    }
-  };
 };
 
 function filterHost(test, actual) {
-  if(typeof actual !== 'string') {
-    throw new Error('Tried to match a non-string hostname!');
-  }
-
-  if(Array.isArray(test)) {
-    const tests = test;
-    return tests.some(test => filterHost(test, actual));
-  }
-
   if(test instanceof RegExp) {
     return actual.match(test);
   }
   if(typeof test === 'string') {
     return actual === test;
   }
+
+  let tests = test;
+  if(!Array.isArray(tests)) {
+    return true;
+  }
+
+  tests = tests.filter(test => typeof test === 'string');
+  if(!tests.length) {
+    return true;
+  }
+
+  return tests.some(test => filterHost(test, actual));
 }

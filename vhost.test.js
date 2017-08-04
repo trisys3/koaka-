@@ -3,6 +3,14 @@ import Koa from 'koa';
 import vhost, {filterHost as filter} from './vhost';
 
 describe('when filtering virtual hosts', () => {
+  test('when a non-string hostname is passed', () =>
+    expect(filter()).toBeTruthy());
+
+  test('when no virtual hosts are expected', () => {
+    const reqHost = 'anything.server.my';
+    expect(filter(null, reqHost)).toBeTruthy();
+  });
+
   describe('by string', () => {
     const filterHost = 'yes.server.my';
 
