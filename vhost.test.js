@@ -6,7 +6,7 @@ describe('when filtering virtual hosts', () => {
   test('when a non-string hostname is passed', () =>
     expect(filter()).toBeTruthy());
 
-  test('when no virtual hosts are expected', () => {
+  test('should match when no virtual hosts are expected', () => {
     const reqHost = 'anything.server.my';
     expect(filter(null, reqHost)).toBeTruthy();
   });
@@ -40,16 +40,24 @@ describe('when filtering virtual hosts', () => {
   });
 
   describe('by array', () => {
-    const filterHosts = ['string.server.my', 'string.server.yours'];
+    const filterHosts = [];
 
-    test('host should match when at least one vhost matches', () => {
-      const reqHost = 'string.server.my';
-      expect(filter(filterHosts, reqHost)).toBeTruthy();
+    test('should always match when array is empty', () => {
+      expect(filter(filterHosts, null)).toBeTruthy();
     });
 
-    test('host should not match when no vhost matches', () => {
-      const reqHost = 'string.server.theirs';
-      expect(filter(filterHosts, reqHost)).toBeFalsy();
+    describe('when array is not empty', () => {
+    const filterHosts = ['string.server.my'];
+
+      test('host should match when at least one vhost matches', () => {
+        const reqHost = 'string.server.my';
+        expect(filter(filterHosts, reqHost)).toBeTruthy();
+      });
+
+      test('host should not match when no vhost matches', () => {
+        const reqHost = 'string.server.theirs';
+        expect(filter(filterHosts, reqHost)).toBeFalsy();
+      });
     });
   });
 });
