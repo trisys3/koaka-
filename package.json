@@ -4,8 +4,7 @@
   "description": "\"Thing\" server for the koaka Internet of Things framework",
   "main": "dist/index.js",
   "scripts": {
-    "test": "nyc jest",
-    "test-report": "nyc report"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -24,7 +23,6 @@
   "homepage": "https://github.com/trisys3/koaka-thing#readme",
   "devDependencies": {
     "jest": "^20.0.4",
-    "nyc": "^11.1.0",
     "request": "^2.81.0"
   },
   "dependencies": {
