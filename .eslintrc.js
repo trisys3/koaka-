@@ -134,6 +134,7 @@ exports.rules = {
         export: {after: true},
         try: {after: true},
         return: {after: true},
+        const: {after: true},
       },
     },
   ],
