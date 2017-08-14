@@ -1,23 +1,15 @@
 export class Lesson {
-  constructor({name, requests, commands} = {}) {
+  constructor({name, steps} = {}) {
     Object.assign(this, {
       name: name || `lesson-${Date.now()}`,
-      requests: [],
-      commands: [],
+      steps: [],
     });
 
-    if(Array.isArray(requests)) {
-      this.requests.push(...requests
-        .filter(request => typeof request === 'string'));
-    } else if(typeof requests === 'string') {
-      this.requests.push(requests);
-    }
-
-    if(Array.isArray(commands)) {
-      this.commands.push(...commands
-        .filter(command => typeof command === 'string'));
-    } else if(typeof commands === 'string') {
-      this.commands.push(commands);
+    if(Array.isArray(steps)) {
+      this.steps.push(...steps
+        .filter(step => typeof step === 'string'));
+    } else if(typeof steps === 'string') {
+      this.steps.push(steps);
     }
   }
 }

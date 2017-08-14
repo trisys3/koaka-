@@ -1,4 +1,4 @@
-import teach, {Lesson} from './teach';
+import teach, {Lesson} from '.';
 
 describe('A lesson', () => {
   test('can be given a name', () => {
@@ -12,79 +12,40 @@ describe('A lesson', () => {
     expect(lesson).toHaveProperty('name');
   });
 
-  describe('that is empty', () => {
-    const {requests, commands} = new Lesson();
-
-    test('has no requests', () => {
-      expect(requests).toHaveLength(0);
-    });
- 
-    test('has no commands', () => {
-      expect(commands).toHaveLength(0);
-    });
+  test('that is empty has no steps', () => {
+    const {steps} = new Lesson();
+    expect(steps).toHaveLength(0);
   });
 
-  describe('with a request', () => {
+  describe('with a step', () => {
     test('that is a string keeps it', () => {
-      const inputRequest = 'my.url';
-      const {requests} = new Lesson({requests: inputRequest});
+      const inputStep = 'my.url';
+      const {steps} = new Lesson({steps: inputStep});
 
-      expect(requests).toContain(inputRequest);
+      expect(steps).toContain(inputStep);
     });
 
     test('that is an array of strings keeps them', () => {
-      const inputRequest = 'my.url';
-      const inputRequests = [inputRequest];
-      const {requests} = new Lesson({requests: inputRequests});
+      const inputStep = 'my.url';
+      const inputSteps = [inputStep];
+      const {steps} = new Lesson({steps: inputSteps});
 
-      expect(requests).toContain(inputRequest);
+      expect(steps).toContain(inputStep);
     });
 
     test('that is not a string does not keep it', () => {
-      const inputRequest = 1;
-      const {requests} = new Lesson({requests: inputRequest});
+      const inputStep = 1;
+      const {steps} = new Lesson({steps: inputStep});
 
-      expect(requests).toHaveLength(0);
+      expect(steps).toHaveLength(0);
     });
 
     test('that is an array of non-strings does not keep them', () => {
-      const inputRequest = 1;
-      const inputRequests = [inputRequest];
-      const {requests} = new Lesson({requests: inputRequests});
+      const inputStep = 1;
+      const inputSteps = [inputStep];
+      const {steps} = new Lesson({requests: inputSteps});
 
-      expect(requests).toHaveLength(0);
-    });
-  });
-
-  describe('that has a command or commands', () => {
-    test('that is a string keeps it', () => {
-      const inputCommand = 'my.url';
-      const {commands} = new Lesson({commands: inputCommand});
-
-      expect(commands).toContain(inputCommand);
-    });
-
-    test('that is an array of strings keeps them', () => {
-      const inputCommand = 'my.url';
-      const inputCommands = [inputCommand];
-      const {commands} = new Lesson({commands: inputCommands});
-
-      expect(commands).toContain(inputCommand);
-    });
-
-    test('that is not a string does not keep it', () => {
-      const inputCommand = 1;
-      const {commands} = new Lesson({commands: inputCommand});
-
-      expect(commands).toHaveLength(0);
-    });
-
-    test('that is an array of non-strings does not keep them', () => {
-      const inputCommand = 1;
-      const inputCommands = [inputCommand];
-      const {commands} = new Lesson({commands: inputCommands});
-
-      expect(commands).toHaveLength(0);
+      expect(steps).toHaveLength(0);
     });
   });
 });
