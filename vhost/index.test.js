@@ -1,6 +1,6 @@
 import Koa from 'koa';
 
-import vhost, {filterHost as filter} from './vhost';
+import vhost, {filterHost as filter} from '.';
 
 describe('when filtering virtual hosts', () => {
   test('a non-string hostname should always match', () =>
