@@ -104,7 +104,7 @@ exports.rules = {
 
   // style
   'array-bracket-spacing': 2,
-  'array-element-newline': [2, {multiline: true}],
+  'array-element-newline': [2, {multiline: true, minItems: 3}],
   'block-spacing': [2, 'never'],
   'brace-style': [2, '1tbs', {allowSingleLine: true}],
   'comma-dangle': [
@@ -132,9 +132,13 @@ exports.rules = {
       overrides: {
         from: {after: true},
         export: {after: true},
+        import: {after: true},
         try: {after: true},
+        finally: {after: true},
         return: {after: true},
         const: {after: true},
+        let: {after: true},
+        else: {after: true},
       },
     },
   ],
