@@ -1,3 +1,9 @@
+jest.mock('request-promise-any');
+jest.mock('node-run-cmd');
+
+import request from 'request-promise-any';
+import * as nrc from 'node-run-cmd';
+
 import teach, {Lesson} from '.';
 
 describe('A lesson', () => {
@@ -6,7 +12,7 @@ describe('A lesson', () => {
     const lesson = new Lesson({name: lessonName});
     expect(lesson).toHaveProperty('name', lessonName);
   });
-  
+
   test('always has a name', () => {
     const lesson = new Lesson();
     expect(lesson).toHaveProperty('name');
@@ -75,5 +81,78 @@ describe('teaching', () => {
   test('always results in a lesson', () => {
     const lesson = teach();
     expect(lesson).toBeInstanceOf(Lesson);
+  });
+});
+
+describe('a request', () => {
+  test('can be made', async () => {
+    const url = 'http://google.com';
+    expect.assertions(1);
+
+    try {
+      await Lesson.request(url);
+      return expect(request).toHaveBeenCalled();
+    } catch(error) {}
+  });
+});
+
+describe('a command', () => {
+  const runCmd = jest.spyOn(nrc, 'run');
+
+  test('can be run', async () => {
+    const command = 'echo \'Hello world\'';
+    expect.assertions(1);
+
+    try {
+      await Lesson.run(command);
+      return expect(runCmd).toHaveBeenCalled();
+    } catch(error) {}
+  });
+});
+
+describe('running through a lesson', () => {
+  const url = 'http://google.com';
+  const command = 'echo \'Hello world!\'';
+
+  const requestRun = jest.spyOn(Lesson, 'request');
+  const run = jest.spyOn(Lesson, 'run');
+
+  beforeEach(() => {
+    requestRun.mockClear();
+    run.mockClear();
+  });
+
+  test('with a request makes the request', async () => {
+    expect.assertions(1);
+
+    const lesson = new Lesson({steps: url});
+    try {
+      await lesson.do();
+    } finally {
+      return expect(requestRun).toHaveBeenCalled();
+    }
+  });
+
+  test('with a command runs the command', async () => {
+    expect.assertions(1);
+
+    const lesson = new Lesson({steps: command});
+    try {
+      await lesson.do();
+    } finally {
+      expect(run).toHaveBeenCalled();
+    }
+  });
+
+  test('with no URL or command runs nothing', async () => {
+    expect.assertions(2);
+
+    const lesson = new Lesson();
+    try {
+      await lesson.do();
+    } finally {
+      expect(requestRun).not.toHaveBeenCalled();
+      expect(run).not.toHaveBeenCalled();
+    }
   });
 });
