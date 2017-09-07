@@ -58,6 +58,11 @@ export default (name, lessons) => {
 
     ctx.lessons.push(...newLessons.map(lesson => new Lesson(lesson)));
 
+    if(ctx.lessons.length) {
+      ctx.body = {lessons: ctx.lessons};
+      ctx.status = 200;
+    }
+
     return next();
   };
 };

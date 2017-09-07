@@ -8,7 +8,7 @@ describe('teaching', () => {
   let ctx = {};
 
   beforeEach(() => {
-    ctx = {};
+    ctx = {status: 404};
   });
 
   test('no lessons is possible', () => {
@@ -93,6 +93,39 @@ describe('teaching', () => {
 
       teacher(ctx, noop);
       expect(ctx.lessons).toHaveLength(1);
+    });
+
+    test('returns \'OK\' when teaching', () => {
+      const step = 'google.com';
+      const teacher = teach({steps: step});
+
+      ctx.path = '/teach';
+      ctx.query = {lessons: {steps: step}};
+
+      teacher(ctx, noop);
+      expect(ctx.status).toBe(200);
+    });
+
+    test('does not change from 404 when not teaching', () => {
+      const teacher = teach();
+      teacher(ctx, noop);
+      expect(ctx.status).toBe(404);
+    });
+
+    test('returns \'OK\' when teaching from the middleware, as long as the path is correct', () => {
+      const step = 'google.com';
+      const teacher = teach({steps: step});
+      ctx.path = '/teach';
+      teacher(ctx, noop);
+      expect(ctx.status).toBe(200);
+    });
+
+    test('does not change from 404 when teaching from the middleware if the path is not correct', () => {
+      const step = 'google.com';
+      const teacher = teach({steps: step});
+      ctx.path = '/no-teach';
+      teacher(ctx, noop);
+      expect(ctx.status).toBe(404);
     });
 
     test('with no lessons teaches nothing', () => {
