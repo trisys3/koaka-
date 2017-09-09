@@ -63,57 +63,34 @@ describe('when filtering virtual hosts', () => {
 });
 
 describe('virtual host middleware', () => {
-  const request = require('request');
-
-  const usedAfterMw = jest.fn();
-
-  let koa;
-  let server;
+  const next = () => new Promise(() => {
+    // empty resolver
+  });
+  let ctx = {};
 
   beforeEach(() => {
-    koa = new Koa();
-    server = koa.listen(3000);
-  });
-
-  afterEach(() => {
-    usedAfterMw.mockClear();
-    server.close();
+    ctx = {};
   });
 
   test('should defer to other middleware when no domain is passed', () => {
-    expect.assertions(1);
-    koa.use(vhost())
-      .use(afterMw);
-
-    const testReq = new Promise(resolve =>
-      request('http://localhost:3000', () => resolve()));
-
-    return testReq.then(() => expect(usedAfterMw.mock.calls.length).toBe(1));
+    const vhostMw = vhost();
+    const afterVhost = vhostMw(ctx, next);
+    expect(afterVhost).toBeInstanceOf(Promise);
   });
 
   test('should defer to other middleware when the domain matches', () => {
-    expect.assertions(1);
-    koa.use(vhost('localhost'))
-      .use(afterMw);
+    ctx.hostname = 'actual.domain.my';
 
-    const testReq = new Promise(resolve =>
-      request('http://localhost:3000', () => resolve()));
-
-    return testReq.then(() => expect(usedAfterMw.mock.calls.length).toBe(1));
+    const vhostMw = vhost('actual.domain.my');
+    const afterVhost = vhostMw(ctx, next);
+    expect(afterVhost).toBeInstanceOf(Promise);
   });
 
   test('should not defer to other middleware when the domain does not match', () => {
-    expect.assertions(1);
-    koa.use(vhost('nonexistent.domain.my'))
-      .use(afterMw);
+    ctx.hostname = 'nonexistent.domain.my';
 
-    const testReq = new Promise(resolve =>
-      request('http://localhost:3000', () => resolve()));
-
-    return testReq.then(() => expect(usedAfterMw.mock.calls.length).toBe(0));
+    const vhostMw = vhost('actual.domain.my');
+    const afterVhost = vhostMw(ctx, next);
+    expect(afterVhost).not.toBeInstanceOf(Promise);
   });
-
-  function afterMw() {
-    usedAfterMw();
-  }
 });
