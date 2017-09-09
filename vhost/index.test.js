@@ -1,5 +1,3 @@
-import Koa from 'koa';
-
 import vhost, {filterHost as filter} from '.';
 
 describe('when filtering virtual hosts', () => {
