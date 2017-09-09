@@ -106,7 +106,11 @@ exports.rules = {
   'array-bracket-spacing': 2,
   'array-element-newline': [2, {multiline: true, minItems: 3}],
   'block-spacing': [2, 'never'],
-  'brace-style': [2, '1tbs', {allowSingleLine: true}],
+  'brace-style': [
+    2,
+    '1tbs',
+    {allowSingleLine: true},
+  ],
   'comma-dangle': [
     1,
     {
@@ -139,6 +143,7 @@ exports.rules = {
         const: {after: true},
         let: {after: true},
         else: {after: true},
+        class: {after: true},
       },
     },
   ],
