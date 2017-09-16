@@ -1,15 +1,5 @@
-import Koa from 'koa';
+import server from './server';
+import teach from './mw/teach';
 
-const behaviors = [];
-const behavior = behaviors;
-
-const server = Object.assign(new Koa(), {
-  behavior,
-  behaviors,
-});
-
-server.listen(3000);
-
-export default server;
-
-export {server, behavior, behaviors};
+export {server};
+export default teach;
