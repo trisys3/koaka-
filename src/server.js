@@ -8,7 +8,7 @@ const servers = {};
 class Koaka {
   ports = [];
 
-  constructor({steps, domain = 'loalhost', ports} = {}) {
+  constructor({steps, domain = 'localhost', ports} = {}) {
     if(!Array.isArray(ports)) {
       ports = [ports];
     }
