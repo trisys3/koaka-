@@ -4,7 +4,8 @@
   "description": "\"Thing\" server for the koaka Internet of Things framework",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest src",
+    "prepare": "babel src/ --out-dir dist/ --ignore '*.test.js' --source-maps"
   },
   "repository": {
     "type": "git",
