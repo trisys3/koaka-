@@ -1,7 +1,7 @@
-jest.mock('request-promise-any');
+jest.mock('request-promise-native');
 jest.mock('node-run-cmd');
 
-import request from 'request-promise-any';
+import request from 'request-promise-native';
 import * as nrc from 'node-run-cmd';
 
 import teach, {Lesson} from '.';
