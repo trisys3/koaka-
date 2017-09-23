@@ -63,15 +63,23 @@ behaviors.push({
 ## CLI
 
 `koaka`
-`koaka thing [[--name || -n] name] [[--ip || -i] domain name || IP]`: Start up a simple koa server and start taking requests. If using a domain or IP, the device must be accessible from there.
+`koaka thing [[--name || -n] name] [[--ip || -i] domain name || IP [--middleware || -m]]`: Start up a simple koa server and start taking requests. If using a domain or IP, the device must be accessible from there. if adding any extra middleware, each of these should be a regular node module exporting a `koa`-compatible middleware or an array of such middleware. Any option can also be taken from a `.koakarc` file with `.js`, `.json`, `.yaml`, or no extension. The middleware can also be taken from a `.middlewarerc` or `.mwrc` file with the same extensions.
 
-`koaka thing behavior(s) [[--name || -n] server name] -- [[--behaviors || -b] ...behavior list]`: Add one or multiple behaviors. The behavior can also be called from the CLI with a later command, with or without running the server. Generally the same as preconfiguring them when creating the server: `[name] --request(s) [URL] [name] --command(s) [command]`, etc. This option probably won't be used that much, as it is much easier to preconfigure or send requests directly to the server. For example:
+`koaka thing teach [[--name || -n] server name] -- [[--behaviors || -b] ...behavior list]`: Add one or multiple behaviors. The behavior can also be called from the CLI with a later command, with or without running the server. Generally the same as preconfiguring them when creating the server: `[name] --request(s) [URL] [name] --command(s) [command]`, etc. This option probably won't be used that much, as it is much easier to preconfigure or send requests directly to the server. For example:
 
-    koaka thing behavior -n koaka.my -- getEggs --request '//grocerystore.com/eggs' tellRobotButlerToGetEggs --requests '//robotbutler.my/open-door' '//robotbutler.my/pick-up-package' '//robotbutler.my/take-eggs-to-refrigerator'
+    koaka thing teach -n koaka.my -- getEggs --request '//grocerystore.com/eggs' tellRobotButlerToGetEggs --requests '//robotbutler.my/open-door' '//robotbutler.my/pick-up-package' '//robotbutler.my/take-eggs-to-refrigerator'
 
 `koaka thing do [name]`: Call a command created via the `/teach` endpoint, documented below, or the `behavior(s)` command, documented above. For example, if `getEggsWithoutGettingUpFromChair` is created through either of these means, it can be called with:
 
     koaka do getEggsWithoutGettingUpFromChair
+
+`koaka delete [name]`: Delete the lesson with type `name`.
+
+    koaka delete tellRobotButlerToGetEggs
+
+NOTE: If any other lesson depends on this lesson, that lesson will fail! For example, the `getEggsWithoutGettingUpFromChair` lesson would fail now.
+
+`koaka clear`: Delete all steps from this thing, clearing the server, as well. If the server has any other middleware, these will continue to work. If you are using the built-in server with no other middleware, it will work as if you never taught any behaviors in the first place.
 
 # node API
 
@@ -80,18 +88,16 @@ import Koa from 'koa';
 import request from 'request';
 import Koaka, {teach} from 'koaka-thing';
 
-const mwServer = new Koa();
-mwServer.use(teach());
-mwServer.listen(3000);
+const server = new Koa();
+server.use(teach());
+server.listen(3000);
 
-const {behavior, behaviors} = mwServer;
-
-behavior === behaviors;
+const {steps} = server;
 
 request.post('http://localhost:3000/teach', {
   json: true,
   body: {
-    behaviors: [{
+    steps: [{
       name: 'getEggs',
       request: '//grocerystore.com/eggs',
     },
@@ -105,20 +111,20 @@ request.post('http://localhost:3000/teach', {
     }],
   },
 });
-// "behavior" & "behaviors" are the same, and are added onto the server by the
-teach middleware. They take an object. If it has a "name" property, that is
+// "steps" is added onto the server by the
+`teach` middleware. It takes an object. If it has a "name" property, that is
 // assumed to be the name of the behavior. Otherwise, it is assumed to
-// be a hash of behaviors, with each key as a name.
+// be a hash of steps, with each key as a name.
 
-// The behaviors are kept around for convenience. They can be changed from
+// The steps are kept around for convenience. They can be changed from
 // the outside, but `koaka` keeps track of the state.
-console.log(behaviors);
-// { getEggs: { request: [ 'http://grocerystore.com/eggs' ], requests: [ 'http://grocerystore.com/eggs' ] }, tellRobotButlerToRetrieveEggs: { command: ['koaka do requestEggs', 'sleep 2h', 'koaka do controlRobot'], commands: ['koaka do requestEggs', 'sleep 2h', 'koaka do controlRobot' ] } }
+console.log(steps);
+// { getEggs: { requests: [ 'http://grocerystore.com/eggs' ] }, tellRobotButlerToRetrieveEggs: { commands: ['koaka do requestEggs', 'sleep 2h', 'koaka do controlRobot' ] } }
 
 request.post('http://localhost:3000/teach', {
   json: true,
   body: {
-    behavior: {
+    steps: {
       getEggsWithoutGettingUpFromChair: {
         commands: [
           'koaka do requestEggs',
@@ -130,15 +136,15 @@ request.post('http://localhost:3000/teach', {
   },
 });
 
-console.log(behaviors[2]);
-// [ { name: 'getEggsWithoutGettingUpFromChair', command: [ 'koaka do requestEggs', 'sleep 2h', 'koaka do controlRobot' ], commands: [ 'koaka do requestEggs', 'sleep 2h', 'koaka do controlRobot' ] } ]
+console.log(steps[2]);
+// [ { name: 'getEggsWithoutGettingUpFromChair', commands: [ 'koaka do requestEggs', 'sleep 2h', 'koaka do controlRobot' ] } ]
 
 // If the server is accessible via http://koaka.my, we can call one of these
 // behaviors via the CLI, as documented above, or with an HTTP request, like
 // so:
 request.get('http://koaka.my/getEggsWithoutGettingUpFromChair');
 
-// The {server} is a simple koa server with several middlewares like compression,
+// The server itself is a simple koa server with several middlewares like compression,
 // administration routes like /login, and the teach middleware from
 // above. For example, this is the same as calling `koaka thing -n koaka.my`:
 server('koaka.my');
