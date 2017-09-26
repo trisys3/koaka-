@@ -1,10 +1,6 @@
 import Lesson from '../teach';
 
-export default (name, lessons) => {
-  if(!lessons) {
-    lessons = name;
-    name = undefined;
-  }
+export default ({name = '', lessons, route = '/teach'} = {}) => {
   if(!Array.isArray(lessons)) {
     if(lessons) {
       lessons = [lessons];
@@ -13,13 +9,20 @@ export default (name, lessons) => {
     }
   }
 
-  if(typeof name === 'string' && lessons[0]) {
+  if(name && lessons[0]) {
     lessons[0].name = name;
+  }
+
+  if(!route.startsWith('/')) {
+    route = `/${route}`;
   }
 
   let taught = false;
 
   return (ctx, next) => {
+    // the default method is usually GET, but just to be sure...
+    const method = ctx.method || 'GET';
+
     if(!Array.isArray(ctx.lessons)) {
       ctx.lessons = [];
     }
@@ -30,23 +33,17 @@ export default (name, lessons) => {
 
     taught = true;
 
-    if(ctx.path !== '/teach') {
+    if(ctx.path !== route) {
       return next();
     }
 
     const newLessons = [];
 
-    if(ctx.query && ctx.query.lessons) {
-      let queryLessons = ctx.query.lessons;
-
-      if(!Array.isArray(queryLessons)) {
-        queryLessons = [queryLessons];
-      }
-
-      newLessons.push(...queryLessons);
+    if(method === 'GET') {
+      ctx.status = 200;
     }
 
-    if(ctx.body && ctx.body.lessons) {
+    if(method === 'POST' && ctx.body && ctx.body.lessons) {
       let bodyLessons = ctx.body.lessons;
 
       if(!Array.isArray(bodyLessons)) {

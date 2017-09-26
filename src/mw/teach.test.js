@@ -5,11 +5,11 @@ const noop = () => {
 };
 
 describe('teaching', () => {
-  let ctx = {};
-
   beforeEach(() => {
     ctx = {status: 404};
   });
+
+  let ctx = {};
 
   test('no lessons is possible', () => {
     const teacher = teach();
@@ -28,7 +28,7 @@ describe('teaching', () => {
 
     test('with a name keeps the name', () => {
       const lessonName = 'My Lesson';
-      const teacher = teach(lessonName, {lessons: lesson});
+      const teacher = teach({name: lessonName, lessons: lesson});
 
       teacher(ctx, noop);
 
@@ -44,7 +44,7 @@ describe('teaching', () => {
 
   test('multiple lessons is possible', () => {
     const lessons = [{steps: 'echo \'Hello World\''}, {steps: 'google.com'}];
-    const teacher = teach(lessons);
+    const teacher = teach({lessons});
     teacher(ctx, noop);
     expect(ctx.lessons).toHaveLength(2);
   });
@@ -52,8 +52,8 @@ describe('teaching', () => {
   test('multiple times teaches the lesson multiple times', () => {
     const step = 'echo \'Hello world!\'';
 
-    const teacher1 = teach({steps: step});
-    const teacher2 = teach({steps: step});
+    const teacher1 = teach({lessons: {steps: step}});
+    const teacher2 = teach({lessons: {steps: step}});
 
     teacher1(ctx, noop);
     teacher2(ctx, noop);
@@ -62,119 +62,212 @@ describe('teaching', () => {
   });
 
   describe('with a single request', () => {
-    test('multiple times only teaches the original request once', () => {
-      const step = 'google.com';
-      const teacher = teach({steps: step});
-
-      teacher(ctx, noop);
-      teacher(ctx, noop);
-
-      expect(ctx.lessons).toHaveLength(1);
+    beforeEach(() => {
+      ctx = {status: 404};
     });
 
-    test('does not work without the /teach route', () => {
-      const step = 'google.com';
-      const teacher = teach();
+    describe('by GETting', () => {
+      beforeEach(() => {
+        ctx = {status: 404};
+      });
 
-      ctx.path = '/';
-      ctx.query = {lessons: {steps: step}};
-      ctx.body = {lessons: {steps: step}};
+      test('shows the lessons already learned', () => {
+        const step = 'google.com';
+        const teacher = teach({lessons: {steps: step}});
 
-      teacher(ctx, noop);
-      expect(ctx.lessons).toHaveLength(0);
-    });
+        teacher(ctx, noop);
 
-    test('works with the /teach route', () => {
-      const step = 'google.com';
-      const teacher = teach();
+        expect(ctx.lessons).toHaveLength(1);
+      });
 
-      ctx.path = '/teach';
-      ctx.query = {lessons: {steps: step}};
+      test('by default, does not work without the /teach route', () => {
+        const step = 'google.com';
+        const teacher = teach();
 
-      teacher(ctx, noop);
-      expect(ctx.lessons).toHaveLength(1);
-    });
+        ctx.path = '/nonexistent/path';
 
-    test('returns \'OK\' when teaching', () => {
-      const step = 'google.com';
-      const teacher = teach({steps: step});
+        teacher(ctx, noop);
+        expect(ctx.status).toBe(404);
+      });
 
-      ctx.path = '/teach';
-      ctx.query = {lessons: {steps: step}};
+      test('does not work without the route specified', () => {
+        const route = '/some/path';
+        const step = 'google.com';
+        const teacher = teach({route});
 
-      teacher(ctx, noop);
-      expect(ctx.status).toBe(200);
-    });
+        ctx.path = '/nonexistent/path';
 
-    test('does not change from 404 when not teaching', () => {
-      const teacher = teach();
-      teacher(ctx, noop);
-      expect(ctx.status).toBe(404);
-    });
+        teacher(ctx, noop);
+        expect(ctx.status).toBe(404);
+      });
 
-    test('returns \'OK\' when teaching from the middleware, as long as the path is correct', () => {
-      const step = 'google.com';
-      const teacher = teach({steps: step});
-      ctx.path = '/teach';
-      teacher(ctx, noop);
-      expect(ctx.status).toBe(200);
-    });
-
-    test('does not change from 404 when teaching from the middleware if the path is not correct', () => {
-      const step = 'google.com';
-      const teacher = teach({steps: step});
-      ctx.path = '/no-teach';
-      teacher(ctx, noop);
-      expect(ctx.status).toBe(404);
-    });
-
-    test('with no lessons teaches nothing', () => {
-      const teacher = teach();
-      ctx.path = '/teach';
-      teacher(ctx, noop);
-      expect(ctx.lessons).toHaveLength(0);
-    });
-
-    describe('with a single lesson', () => {
-      test('in the query string is possible', () => {
+      test('by default, works with the /teach route', () => {
         const step = 'google.com';
         const teacher = teach();
 
         ctx.path = '/teach';
-        ctx.query = {lessons: {steps: step}};
+
+        teacher(ctx, noop);
+        expect(ctx.status).toBe(200);
+      });
+
+      test('works with the route specified', () => {
+        const route = '/some/path';
+        const step = 'google.com';
+        const teacher = teach({route});
+
+        ctx.path = '/some/path';
+
+        teacher(ctx, noop);
+        expect(ctx.status).toBe(200);
+      });
+    });
+
+    describe('by POSTing', () => {
+      beforeEach(() => {
+        ctx = {status: 404};
+      });
+
+      test('multiple times only teaches the original request once', () => {
+        const step = 'google.com';
+        const teacher = teach({lessons: {steps: step}});
+
+        teacher(ctx, noop);
+        teacher(ctx, noop);
+
+        expect(ctx.lessons).toHaveLength(1);
+      });
+
+      test('multiple times only teaches the original request once', () => {
+        const step = 'google.com';
+        const teacher = teach({lessons: {steps: step}});
+
+        teacher(ctx, noop);
+        teacher(ctx, noop);
+
+        expect(ctx.lessons).toHaveLength(1);
+      });
+
+      test('by default, does not work without the /teach route', () => {
+        const step = 'google.com';
+        const teacher = teach();
+
+        ctx.path = '/nonexistent/path';
+        ctx.body = {lessons: {steps: step}};
+        ctx.method = 'POST';
+
+        teacher(ctx, noop);
+        expect(ctx.lessons).toHaveLength(0);
+      });
+
+      test('does not work without the route specified', () => {
+        const route = '/some/path';
+        const step = 'google.com';
+        const teacher = teach({route});
+
+        ctx.path = '/nonexistent/path';
+        ctx.body = {lessons: {steps: step}};
+        ctx.method = 'POST';
+
+        teacher(ctx, noop);
+        expect(ctx.lessons).toHaveLength(0);
+      });
+
+      test('by default, works with the /teach route', () => {
+        const step = 'google.com';
+        const teacher = teach();
+
+        ctx.path = '/teach';
+        ctx.body = {lessons: {steps: step}};
+        ctx.method = 'POST';
 
         teacher(ctx, noop);
         expect(ctx.lessons).toHaveLength(1);
       });
 
-      test('in the request body is possible', () => {
+      test('works with the route specified', () => {
+        const route = '/some/path';
+        const step = 'google.com';
+        const teacher = teach({route});
+
+        ctx.path = '/some/path';
+        ctx.body = {lessons: {steps: step}};
+        ctx.method = 'POST';
+
+        teacher(ctx, noop);
+        expect(ctx.lessons).toHaveLength(1);
+      });
+
+      test('adds a slash at the beginning of the specified route for convenience', () => {
+        const route = 'some/path';
+        const step = 'google.com';
+        const teacher = teach({route});
+
+        ctx.path = '/some/path';
+        ctx.body = {lessons: {steps: step}};
+        ctx.method = 'POST';
+
+        teacher(ctx, noop);
+        expect(ctx.lessons).toHaveLength(1);
+      });
+
+      test('returns \'OK\' when teaching', () => {
+        const step = 'google.com';
+        const teacher = teach({lessons: {steps: step}});
+
+        ctx.path = '/teach';
+        ctx.body = {lessons: {steps: step}};
+
+        teacher(ctx, noop);
+        expect(ctx.status).toBe(200);
+      });
+
+      test('does not change from 404 when not teaching', () => {
+        const teacher = teach();
+        teacher(ctx, noop);
+        expect(ctx.status).toBe(404);
+      });
+
+      test('returns \'OK\' when teaching from the middleware, as long as the path is correct', () => {
+        const step = 'google.com';
+        const teacher = teach({lessons: {steps: step}});
+        ctx.path = '/teach';
+        teacher(ctx, noop);
+        expect(ctx.status).toBe(200);
+      });
+
+      test('does not change from 404 when teaching from the middleware if the path is not correct', () => {
+        const step = 'google.com';
+        const teacher = teach({lessons: {steps: step}});
+        ctx.path = '/no-teach';
+        teacher(ctx, noop);
+        expect(ctx.status).toBe(404);
+      });
+
+      test('with no lessons teaches nothing', () => {
+        const teacher = teach();
+        ctx.path = '/teach';
+        teacher(ctx, noop);
+        expect(ctx.lessons).toHaveLength(0);
+      });
+
+      test('with a single lesson in the request body is possible', () => {
         const step = 'google.com';
         const teacher = teach();
 
+        ctx.method = 'POST';
         ctx.path = '/teach';
         ctx.body = {lessons: {steps: step}};
 
         teacher(ctx, noop);
         expect(ctx.lessons).toHaveLength(1);
       });
-    });
 
-    describe('with multiple lessons', () => {
-      test('in the query string is possible', () => {
+      test('with multiple lessons in the request body is possible', () => {
         const step = 'google.com';
         const teacher = teach();
 
-        ctx.path = '/teach';
-        ctx.query = {lessons: [{steps: step}, {steps: step}]};
-
-        teacher(ctx, noop);
-        expect(ctx.lessons).toHaveLength(2);
-      });
-
-      test('in the request body is possible', () => {
-        const step = 'google.com';
-        const teacher = teach();
-
+        ctx.method = 'POST';
         ctx.path = '/teach';
         ctx.body = {lessons: [{steps: step}, {steps: step}]};
 
