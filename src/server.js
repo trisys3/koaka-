@@ -16,7 +16,7 @@ class Koaka {
     const koa = new Koa();
 
     koa.use(vhost(domain))
-      .use(teach(steps))
+      .use(teach({lessons: steps}))
       .use(mw);
 
     Object.assign(this, {
