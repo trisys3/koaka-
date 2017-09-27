@@ -88,48 +88,6 @@ describe('teaching', () => {
 
         expect(ctx.state.lessons).toHaveLength(1);
       });
-
-      test('by default, does not work without the /teach route', () => {
-        const step = 'google.com';
-        const teacher = teach();
-
-        ctx.path = '/nonexistent/path';
-
-        teacher(ctx, noop);
-        expect(ctx.status).toBe(404);
-      });
-
-      test('does not work without the route specified', () => {
-        const route = '/some/path';
-        const step = 'google.com';
-        const teacher = teach({route});
-
-        ctx.path = '/nonexistent/path';
-
-        teacher(ctx, noop);
-        expect(ctx.status).toBe(404);
-      });
-
-      test('by default, works with the /teach route', () => {
-        const step = 'google.com';
-        const teacher = teach();
-
-        ctx.path = '/teach';
-
-        teacher(ctx, noop);
-        expect(ctx.status).toBe(200);
-      });
-
-      test('works with the route specified', () => {
-        const route = '/some/path';
-        const step = 'google.com';
-        const teacher = teach({route});
-
-        ctx.path = '/some/path';
-
-        teacher(ctx, noop);
-        expect(ctx.status).toBe(200);
-      });
     });
 
     describe('by GETting or POSTing', () => {
@@ -137,8 +95,17 @@ describe('teaching', () => {
         ctx = {state: {}, status: 404};
       });
 
+      test('adds a slash at the beginning of the specified route for convenience', () => {
+        const route = 'some/path';
+        const teacher = teach({route});
+
+        ctx.path = '/some/path';
+
+        teacher(ctx, noop);
+        expect(ctx.status).toBe(200);
+      });
+
       test('by default, does not teach without the /teach route', () => {
-        const step = 'google.com';
         const teacher = teach();
 
         ctx.path = '/nonexistent/path';
@@ -154,7 +121,6 @@ describe('teaching', () => {
 
       test('does not teach without the route specified', () => {
         const route = '/some/path';
-        const step = 'google.com';
         const teacher = teach({route});
 
         ctx.path = '/nonexistent/path';
@@ -169,7 +135,6 @@ describe('teaching', () => {
       });
 
       test('by default, teaches with the /teach route', () => {
-        const step = 'google.com';
         const teacher = teach();
 
         ctx.path = '/teach';
@@ -185,7 +150,6 @@ describe('teaching', () => {
 
       test('teaches with the route specified', () => {
         const route = '/some/path';
-        const step = 'google.com';
         const teacher = teach({route});
 
         ctx.path = '/some/path';
@@ -203,18 +167,6 @@ describe('teaching', () => {
     describe('by POSTing', () => {
       beforeEach(() => {
         ctx = {state: {}, status: 404, method: 'POST'};
-      });
-
-      test('adds a slash at the beginning of the specified route for convenience', () => {
-        const route = 'some/path';
-        const step = 'google.com';
-        const teacher = teach({route});
-
-        ctx.path = '/some/path';
-        ctx.body = {lessons: {steps: step}};
-
-        teacher(ctx, noop);
-        expect(ctx.state.lessons).toHaveLength(1);
       });
 
       test('with no lessons teaches nothing', () => {
@@ -244,6 +196,125 @@ describe('teaching', () => {
 
         teacher(ctx, noop);
         expect(ctx.state.lessons).toHaveLength(2);
+      });
+    });
+
+    describe('by DELETEing', () => {
+      beforeEach(() => {
+        ctx = {state: {}, status: 404, method: 'DELETE'};
+      });
+
+      test('adds a slash at the beginning of the specified route for convenience', () => {
+        const route = 'some/path';
+        const teacher = teach({delete: route});
+
+        ctx.path = '/some/path';
+
+        teacher(ctx, noop);
+        expect(ctx.status).toBe(200);
+      });
+
+      test('by default, does not unteach without the /unteach route', () => {
+        const teacher = teach();
+
+        ctx.path = '/nonexistent/path';
+
+        teacher(ctx, noop);
+        expect(ctx.status).toBe(404);
+      });
+
+      test('does not unteach without the route specified', () => {
+        const route = '/some/path';
+        const teacher = teach({delete: route});
+
+        ctx.path = '/nonexistent/path';
+
+        teacher(ctx, noop);
+        expect(ctx.status).toBe(404);
+      });
+
+      test('by default, unteaches with the /unteach route', () => {
+        const teacher = teach();
+
+        ctx.path = '/unteach';
+
+        teacher(ctx, noop);
+        expect(ctx.status).toBe(200);
+      });
+
+      test('unteaches with the route specified', () => {
+        const route = '/some/path';
+        const teacher = teach({delete: route});
+
+        ctx.path = '/some/path';
+
+        teacher(ctx, noop);
+        expect(ctx.status).toBe(200);
+      });
+
+      test('can unteach no lessons', () => {
+        const lessons = [{name: 'Lesson 1'}, {name: 'Lesson 2'}];
+        const teacher = teach({lessons});
+
+        ctx.path = '/unteach';
+        ctx.body = {lessons: 'Lesson 3'};
+
+        teacher(ctx, noop);
+        expect(ctx.state.lessons).toHaveLength(2);
+      });
+
+      test('can unteach a single lesson from the middleware options', () => {
+        const lessons = [{name: 'Lesson 1'}, {name: 'Lesson 2'}];
+        const teacher = teach({lessons});
+
+        ctx.path = '/unteach';
+        ctx.body = {lessons: 'Lesson 1'};
+
+        teacher(ctx, noop);
+        expect(ctx.state.lessons).toHaveLength(1);
+      });
+
+      test('can unteach a single lesson from previous requests', () => {
+        const lessons = [{name: 'Lesson 1'}, {name: 'Lesson 2'}];
+        const teacher = teach();
+
+        ctx.path = '/teach';
+        ctx.body = {lessons};
+        ctx.method = 'POST';
+        teacher(ctx, noop);
+
+        ctx.path = '/unteach';
+        ctx.body = {lessons: 'Lesson 1'};
+        ctx.method = 'DELETE';
+        teacher(ctx, noop);
+        expect(ctx.state.lessons).toHaveLength(1);
+      });
+
+      test('can unteach multiple lessons from the middleware options', () => {
+        const lessons = [{name: 'Lesson 1'}, {name: 'Lesson 2'}, {name: 'Lesson 3'}];
+        const teacher = teach({lessons});
+
+        ctx.path = '/unteach';
+        ctx.body = {lessons: ['Lesson 1', 'Lesson 2']};
+
+        teacher(ctx, noop);
+        expect(ctx.state.lessons).toHaveLength(1);
+      });
+
+      test('can unteach multiple lessons from previous requests', () => {
+        const lessons = [{name: 'Lesson 1'}, {name: 'Lesson 2'}, {name: 'Lesson 3'}];
+        const teacher = teach();
+
+        ctx.path = '/teach';
+        ctx.body = {lessons};
+        ctx.method = 'POST';
+        teacher(ctx, noop);
+
+        ctx.path = '/unteach';
+        ctx.body = {lessons: ['Lesson 1', 'Lesson 2']};
+        ctx.method = 'DELETE';
+        teacher(ctx, noop);
+        expect(ctx.state.lessons).toHaveLength(1);
       });
     });
   });
