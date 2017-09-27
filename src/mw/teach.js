@@ -1,6 +1,7 @@
 import Lesson from '../teach';
 
-export default ({name = '', lessons, route = '/teach'} = {}) => {
+export default ({name = '', lessons, route = '/teach', deleteRoute =
+'/unteach'} = {}) => {
   if(!Array.isArray(lessons)) {
     if(lessons) {
       lessons = [lessons];
@@ -20,44 +21,36 @@ export default ({name = '', lessons, route = '/teach'} = {}) => {
   let taught = false;
 
   return (ctx, next) => {
-    // the default method is usually GET, but just to be sure...
-    const method = ctx.method || 'GET';
+    const {state, method = 'GET', path} = ctx;
 
-    if(!Array.isArray(ctx.lessons)) {
-      ctx.lessons = [];
+    if(!Array.isArray(state.lessons)) {
+      state.lessons = [];
     }
+    const reqLessons = state.lessons;
 
     if(!taught) {
-      ctx.lessons.push(...lessons.map(lesson => new Lesson(lesson)));
+      reqLessons.push(...lessons.map(lesson => new Lesson(lesson)));
     }
 
     taught = true;
 
-    if(ctx.path !== route) {
+    if((method === 'GET' || method === 'POST') && path !== route) {
       return next();
     }
+    ctx.status = 200;
 
-    const newLessons = [];
-
-    if(method === 'GET') {
-      ctx.status = 200;
-    }
-
-    if(method === 'POST' && ctx.body && ctx.body.lessons) {
-      let bodyLessons = ctx.body.lessons;
-
-      if(!Array.isArray(bodyLessons)) {
-        bodyLessons = [bodyLessons];
+    if(method === 'POST') {
+      const {body = {}} = ctx;
+      if(!Array.isArray(body.lessons)) {
+        if(body.lessons) {
+          body.lessons = [body.lessons];
+        } else {
+          body.lessons = [];
+        }
       }
 
-      newLessons.push(...bodyLessons);
-    }
-
-    ctx.lessons.push(...newLessons.map(lesson => new Lesson(lesson)));
-
-    if(ctx.lessons.length) {
-      ctx.body = {lessons: ctx.lessons};
-      ctx.status = 200;
+      body.lessons.push(...lessons);
+      reqLessons.push(...body.lessons.map(lesson => new Lesson(lesson)));
     }
 
     return next();
