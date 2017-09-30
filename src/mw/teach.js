@@ -26,12 +26,12 @@ export default ({name = '', lessons, route = '/assess', delete: deleteRoute = '/
   let taught = false;
 
   return (ctx, next) => {
-    const {state, method = 'GET', path} = ctx;
+    const {app: server, method = 'GET', path} = ctx;
 
-    if(!Array.isArray(state.lessons)) {
-      state.lessons = [];
+    if(!Array.isArray(server.lessons)) {
+      server.lessons = [];
     }
-    const reqLessons = state.lessons;
+    const reqLessons = server.lessons;
 
     if(!taught) {
       reqLessons.push(...lessons.map(lesson => new Lesson(lesson)));

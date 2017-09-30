@@ -7,13 +7,13 @@ const noop = () => {
 let ctx = {};
 describe('teaching', () => {
   beforeEach(() => {
-    ctx = {state: {}, status: 404};
+    ctx = {app: {}, status: 404};
   });
 
   test('no lessons is possible', () => {
     const teacher = teach();
     teacher(ctx, noop);
-    expect(ctx.state.lessons).toHaveLength(0);
+    expect(ctx.app.lessons).toHaveLength(0);
   });
 
   describe('a single lesson', () => {
@@ -22,7 +22,7 @@ describe('teaching', () => {
     test('is possible', () => {
       const teacher = teach({lessons: lesson});
       teacher(ctx, noop);
-      expect(ctx.state.lessons).toHaveLength(1);
+      expect(ctx.app.lessons).toHaveLength(1);
     });
 
     test('with a name keeps the name', () => {
@@ -31,13 +31,13 @@ describe('teaching', () => {
 
       teacher(ctx, noop);
 
-      expect(ctx.state.lessons[0]).toHaveProperty('name', lessonName);
+      expect(ctx.app.lessons[0]).toHaveProperty('name', lessonName);
     });
 
     test('without a name is possible', () => {
       const teacher = teach({lessons: lesson});
       teacher(ctx, noop);
-      expect(ctx.state.lessons).toHaveLength(1);
+      expect(ctx.app.lessons).toHaveLength(1);
     });
   });
 
@@ -45,7 +45,7 @@ describe('teaching', () => {
     const lessons = [{steps: 'echo \'Hello World\''}, {steps: 'google.com'}];
     const teacher = teach({lessons});
     teacher(ctx, noop);
-    expect(ctx.state.lessons).toHaveLength(2);
+    expect(ctx.app.lessons).toHaveLength(2);
   });
 
   test('multiple times teaches the lesson multiple times', () => {
@@ -57,12 +57,12 @@ describe('teaching', () => {
     teacher1(ctx, noop);
     teacher2(ctx, noop);
 
-    expect(ctx.state.lessons).toHaveLength(2);
+    expect(ctx.app.lessons).toHaveLength(2);
   });
 
   describe('with a single request', () => {
     beforeEach(() => {
-      ctx = {state: {}, status: 404};
+      ctx = {app: {}, status: 404};
     });
 
     test('multiple times only teaches the original request once', () => {
@@ -72,7 +72,7 @@ describe('teaching', () => {
       teacher(ctx, noop);
       teacher(ctx, noop);
 
-      expect(ctx.state.lessons).toHaveLength(1);
+      expect(ctx.app.lessons).toHaveLength(1);
     });
 
     test('adds a slash at the beginning of the specified route for convenience', () => {
@@ -87,7 +87,7 @@ describe('teaching', () => {
 
     describe('by GETting', () => {
       beforeEach(() => {
-        ctx = {state: {}, status: 404};
+        ctx = {app: {}, status: 404};
       });
 
       test('shows the lessons already learned', () => {
@@ -96,7 +96,7 @@ describe('teaching', () => {
 
         teacher(ctx, noop);
 
-        expect(ctx.state.lessons).toHaveLength(1);
+        expect(ctx.app.lessons).toHaveLength(1);
       });
 
       test('by default, teaches with the /assess route', () => {
@@ -126,7 +126,7 @@ describe('teaching', () => {
 
     describe('by POSTing', () => {
       beforeEach(() => {
-        ctx = {state: {}, status: 404, method: 'POST'};
+        ctx = {app: {}, status: 404, method: 'POST'};
       });
 
       test('adds a slash at the beginning of the specified route for convenience', () => {
@@ -142,7 +142,7 @@ describe('teaching', () => {
         const teacher = teach();
         ctx.path = '/teach';
         teacher(ctx, noop);
-        expect(ctx.state.lessons).toHaveLength(0);
+        expect(ctx.app.lessons).toHaveLength(0);
       });
 
       test('with a single lesson in the request body is possible', () => {
@@ -153,7 +153,7 @@ describe('teaching', () => {
         ctx.body = {lessons: {steps: step}};
 
         teacher(ctx, noop);
-        expect(ctx.state.lessons).toHaveLength(1);
+        expect(ctx.app.lessons).toHaveLength(1);
       });
 
       test('with multiple lessons in the request body is possible', () => {
@@ -164,7 +164,7 @@ describe('teaching', () => {
         ctx.body = {lessons: [{steps: step}, {steps: step}]};
 
         teacher(ctx, noop);
-        expect(ctx.state.lessons).toHaveLength(2);
+        expect(ctx.app.lessons).toHaveLength(2);
       });
 
       test('by default, teaches with the /teach route', () => {
@@ -195,7 +195,7 @@ describe('teaching', () => {
 
     describe('by DELETEing', () => {
       beforeEach(() => {
-        ctx = {state: {}, status: 404, method: 'DELETE'};
+        ctx = {app: {}, status: 404, method: 'DELETE'};
       });
 
       test('adds a slash at the beginning of the specified route for convenience', () => {
@@ -239,7 +239,7 @@ describe('teaching', () => {
         ctx.body = {lessons: 'Lesson 3'};
 
         teacher(ctx, noop);
-        expect(ctx.state.lessons).toHaveLength(2);
+        expect(ctx.app.lessons).toHaveLength(2);
       });
 
       test('can unteach a single lesson from the middleware options', () => {
@@ -250,7 +250,7 @@ describe('teaching', () => {
         ctx.body = {lessons: 'Lesson 1'};
 
         teacher(ctx, noop);
-        expect(ctx.state.lessons).toHaveLength(1);
+        expect(ctx.app.lessons).toHaveLength(1);
       });
 
       test('can unteach a single lesson from previous requests', () => {
@@ -266,30 +266,22 @@ describe('teaching', () => {
         ctx.body = {lessons: 'Lesson 1'};
         ctx.method = 'DELETE';
         teacher(ctx, noop);
-        expect(ctx.state.lessons).toHaveLength(1);
+        expect(ctx.app.lessons).toHaveLength(1);
       });
 
       test('can unteach multiple lessons from the middleware options', () => {
-        const lessons = [
-          {name: 'Lesson 1'},
-          {name: 'Lesson 2'},
-          {name: 'Lesson 3'},
-        ];
+        const lessons = [{name: 'Lesson 1'}, {name: 'Lesson 2'}, {name: 'Lesson 3'}];
         const teacher = teach({lessons});
 
         ctx.path = '/unteach';
         ctx.body = {lessons: ['Lesson 1', 'Lesson 2']};
 
         teacher(ctx, noop);
-        expect(ctx.state.lessons).toHaveLength(1);
+        expect(ctx.app.lessons).toHaveLength(1);
       });
 
       test('can unteach multiple lessons from previous requests', () => {
-        const lessons = [
-          {name: 'Lesson 1'},
-          {name: 'Lesson 2'},
-          {name: 'Lesson 3'},
-        ];
+        const lessons = [{name: 'Lesson 1'}, {name: 'Lesson 2'}, {name: 'Lesson 3'}];
         const teacher = teach();
 
         ctx.path = '/teach';
@@ -301,7 +293,7 @@ describe('teaching', () => {
         ctx.body = {lessons: ['Lesson 1', 'Lesson 2']};
         ctx.method = 'DELETE';
         teacher(ctx, noop);
-        expect(ctx.state.lessons).toHaveLength(1);
+        expect(ctx.app.lessons).toHaveLength(1);
       });
     });
   });
