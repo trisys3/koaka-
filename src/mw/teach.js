@@ -1,7 +1,6 @@
 import Lesson from '../teach';
 
-export default ({name = '', lessons, route = '/teach', delete: deleteRoute =
-'/unteach'} = {}) => {
+export default ({name = '', lessons, route = '/assess', delete: deleteRoute = '/unteach', postRoute = '/teach'} = {}) => {
   if(!Array.isArray(lessons)) {
     if(lessons) {
       lessons = [lessons];
@@ -40,7 +39,10 @@ export default ({name = '', lessons, route = '/teach', delete: deleteRoute =
     if(method === 'DELETE' && path !== deleteRoute) {
       return next();
     }
-    if(method !== 'DELETE' && path !== route) {
+    if(method === 'POST' && path !== postRoute) {
+      return next();
+    }
+    if(method === 'GET' && path !== route) {
       return next();
     }
     ctx.status = 200;
