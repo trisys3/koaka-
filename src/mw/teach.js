@@ -16,6 +16,9 @@ export default ({name = '', lessons, route = '/assess', delete: deleteRoute = '/
   if(!route.startsWith('/')) {
     route = `/${route}`;
   }
+  if(!postRoute.startsWith('/')) {
+    postRoute = `/${postRoute}`;
+  }
   if(!deleteRoute.startsWith('/')) {
     deleteRoute = `/${deleteRoute}`;
   }
