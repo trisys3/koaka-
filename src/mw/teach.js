@@ -1,6 +1,6 @@
 import Lesson from '../teach';
 
-export default ({name = '', lessons, route = '/assess', delete: deleteRoute = '/unteach', postRoute = '/teach'} = {}) => {
+export default ({name = '', lessons, route = '/assess', delete: deleteRoute = '/unteach', post: postRoute = '/teach'} = {}) => {
   if(!Array.isArray(lessons)) {
     if(lessons) {
       lessons = [lessons];
@@ -39,16 +39,12 @@ export default ({name = '', lessons, route = '/assess', delete: deleteRoute = '/
 
     taught = true;
 
-    if(method === 'DELETE' && path !== deleteRoute) {
-      return next();
+    if(method === 'GET') {
+      if(path !== route) {
+        return next();
+      }
+      ctx.status = 200;
     }
-    if(method === 'POST' && path !== postRoute) {
-      return next();
-    }
-    if(method === 'GET' && path !== route) {
-      return next();
-    }
-    ctx.status = 200;
 
     const {body = {}} = ctx;
     if(!Array.isArray(body.lessons)) {
@@ -59,10 +55,12 @@ export default ({name = '', lessons, route = '/assess', delete: deleteRoute = '/
       }
     }
 
-    if(method === 'POST') {
+    if(method === 'POST' && ctx.path === postRoute) {
+      ctx.status = 200;
       body.lessons.push(...lessons);
       reqLessons.push(...body.lessons.map(lesson => new Lesson(lesson)));
-    } else if(method === 'DELETE') {
+    } else if(method === 'DELETE' && ctx.path === deleteRoute) {
+      ctx.status = 200;
       for(const lessonName of body.lessons) {
         const lessonIndex = reqLessons
           .findIndex(lesson => lessonName === lesson.name);

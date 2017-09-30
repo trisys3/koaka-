@@ -129,6 +129,15 @@ describe('teaching', () => {
         ctx = {state: {}, status: 404, method: 'POST'};
       });
 
+      test('adds a slash at the beginning of the specified route for convenience', () => {
+        const route = 'some/path';
+        const teacher = teach({post: route});
+
+        ctx.path = '/some/path';
+
+        teacher(ctx, noop);
+        expect(ctx.status).toBe(200);
+      });
       test('with no lessons teaches nothing', () => {
         const teacher = teach();
         ctx.path = '/teach';
@@ -173,7 +182,7 @@ describe('teaching', () => {
 
       test('teaches with the route specified', () => {
         const route = '/some/path';
-        const teacher = teach({postRoute: route});
+        const teacher = teach({post: route});
 
         teacher(ctx, noop);
         expect(ctx.status).toBe(404);
