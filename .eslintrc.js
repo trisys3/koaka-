@@ -104,13 +104,9 @@ exports.rules = {
 
   // style
   'array-bracket-spacing': 2,
-  'array-element-newline': [2, {multiline: true, minItems: 3}],
+  'array-element-newline': [2, {multiline: true}],
   'block-spacing': [2, 'never'],
-  'brace-style': [
-    2,
-    '1tbs',
-    {allowSingleLine: true},
-  ],
+  'brace-style': [2, '1tbs', {allowSingleLine: true}],
   'comma-dangle': [
     1,
     {
