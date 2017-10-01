@@ -1,18 +1,6 @@
 import Lesson from '../teach';
 
-export default ({name = '', lessons, route = '/assess', delete: deleteRoute = '/unteach', post: postRoute = '/teach'} = {}) => {
-  if(!Array.isArray(lessons)) {
-    if(lessons) {
-      lessons = [lessons];
-    } else {
-      lessons = [];
-    }
-  }
-
-  if(name && lessons[0]) {
-    lessons[0].name = name;
-  }
-
+export default ({route = '/assess', delete: deleteRoute = '/unteach', post: postRoute = '/teach'} = {}) => {
   if(!route.startsWith('/')) {
     route = `/${route}`;
   }
@@ -23,30 +11,20 @@ export default ({name = '', lessons, route = '/assess', delete: deleteRoute = '/
     deleteRoute = `/${deleteRoute}`;
   }
 
-  let taught = false;
-
   return (ctx, next) => {
-    const {app: server, method = 'GET', path} = ctx;
+    ctx.body = ctx.body || {};
+    const {app: server, method = 'GET', path, body} = ctx;
 
     if(!Array.isArray(server.lessons)) {
-      server.lessons = [];
+      if(server.lessons) {
+        server.lessons = [server.lessons];
+      } else {
+        server.lessons = [];
+      }
     }
+
     const reqLessons = server.lessons;
 
-    if(!taught) {
-      reqLessons.push(...lessons.map(lesson => new Lesson(lesson)));
-    }
-
-    taught = true;
-
-    if(method === 'GET') {
-      if(path !== route) {
-        return next();
-      }
-      ctx.status = 200;
-    }
-
-    const {body = {}} = ctx;
     if(!Array.isArray(body.lessons)) {
       if(body.lessons) {
         body.lessons = [body.lessons];
@@ -55,9 +33,17 @@ export default ({name = '', lessons, route = '/assess', delete: deleteRoute = '/
       }
     }
 
+    if(method === 'GET') {
+      if(path !== route) {
+        return next();
+      }
+      ctx.status = 200;
+
+      body.lessons = [...body.lessons, ...reqLessons];
+    }
+
     if(method === 'POST' && ctx.path === postRoute) {
       ctx.status = 200;
-      body.lessons.push(...lessons);
       reqLessons.push(...body.lessons.map(lesson => new Lesson(lesson)));
     } else if(method === 'DELETE' && ctx.path === deleteRoute) {
       ctx.status = 200;

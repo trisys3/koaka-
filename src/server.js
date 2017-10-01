@@ -13,17 +13,13 @@ class Koaka {
       ports = [ports];
     }
 
-    const koa = new Koa();
+    const server = new Koa();
 
-    koa.use(vhost(domain))
+    server.use(vhost(domain))
       .use(teach({lessons: steps}))
       .use(mw);
 
-    Object.assign(this, {
-      teach,
-      server: koa,
-      steps,
-    });
+    Object.assign(this, {teach, server, steps});
 
     this.serve(ports);
   }
