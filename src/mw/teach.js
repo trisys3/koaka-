@@ -55,6 +55,8 @@ export default ({route = '/assess', delete: deleteRoute = '/unteach', post: post
       return next();
     }
 
+    // other HTTP verbs don't matter
+    // istanbul ignore else
     if(method === 'DELETE') {
       if(ctx.path !== deleteRoute) {
         return next();
