@@ -40,13 +40,27 @@ export default ({route = '/assess', delete: deleteRoute = '/unteach', post: post
       ctx.status = 200;
 
       body.lessons = [...body.lessons, ...reqLessons];
+
+      return next();
     }
 
-    if(method === 'POST' && ctx.path === postRoute) {
+    if(method === 'POST') {
+      if(ctx.path !== postRoute) {
+        return next();
+      }
       ctx.status = 200;
+
       reqLessons.push(...body.lessons.map(lesson => new Lesson(lesson)));
-    } else if(method === 'DELETE' && ctx.path === deleteRoute) {
+
+      return next();
+    }
+
+    if(method === 'DELETE') {
+      if(ctx.path !== deleteRoute) {
+        return next();
+      }
       ctx.status = 200;
+
       for(const lessonName of body.lessons) {
         const lessonIndex = reqLessons
           .findIndex(lesson => lessonName === lesson.name);
@@ -54,8 +68,8 @@ export default ({route = '/assess', delete: deleteRoute = '/unteach', post: post
           reqLessons.splice(lessonIndex, 1);
         }
       }
-    }
 
-    return next();
+      return next();
+    }
   };
 };
