@@ -5,7 +5,10 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "jest src",
-    "prepare": "babel src/ --out-dir dist/ --ignore '*.test.js' --source-maps"
+    "build": "babel src/ --out-dir dist/ --ignore '*.test.js' --source-maps",
+    "start": "babel-node src/server.js",
+    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
