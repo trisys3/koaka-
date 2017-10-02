@@ -1,5 +1,3 @@
-import Lesson from '../teach';
-
 export default ({route = '/assess', delete: deleteRoute = '/unteach', post: postRoute = '/teach'} = {}) => {
   if(!route.startsWith('/')) {
     route = `/${route}`;
@@ -13,25 +11,8 @@ export default ({route = '/assess', delete: deleteRoute = '/unteach', post: post
 
   return (ctx, next) => {
     ctx.body = ctx.body || {};
-    const {app: server, method = 'GET', path, body} = ctx;
-
-    if(!Array.isArray(server.lessons)) {
-      if(server.lessons) {
-        server.lessons = [server.lessons];
-      } else {
-        server.lessons = [];
-      }
-    }
-
-    const reqLessons = server.lessons;
-
-    if(!Array.isArray(body.lessons)) {
-      if(body.lessons) {
-        body.lessons = [body.lessons];
-      } else {
-        body.lessons = [];
-      }
-    }
+    const {app: server, method = 'GET', path, body, request: req} = ctx;
+    req.body = req.body || {};
 
     if(method === 'GET') {
       if(path !== route) {
@@ -39,7 +20,8 @@ export default ({route = '/assess', delete: deleteRoute = '/unteach', post: post
       }
       ctx.status = 200;
 
-      body.lessons = [...body.lessons, ...reqLessons];
+      body.lessons = body.lessons || {};
+      Object.assign(body.lessons, server.lessons);
 
       return next();
     }
@@ -50,7 +32,9 @@ export default ({route = '/assess', delete: deleteRoute = '/unteach', post: post
       }
       ctx.status = 200;
 
-      reqLessons.push(...body.lessons.map(lesson => new Lesson(lesson)));
+      server.lessons = server.lessons || {};
+      Object.assign(server.lessons, req.body.lessons);
+      body.lessons = req.body.lessons;
 
       return next();
     }
@@ -63,12 +47,16 @@ export default ({route = '/assess', delete: deleteRoute = '/unteach', post: post
       }
       ctx.status = 200;
 
-      for(const lessonName of body.lessons) {
-        const lessonIndex = reqLessons
-          .findIndex(lesson => lessonName === lesson.name);
-        if(~lessonIndex) {
-          reqLessons.splice(lessonIndex, 1);
+      if(!Array.isArray(req.body.lessons)) {
+        req.body.lessons = [];
+      }
+
+      for(const lessonName in server.lessons) {
+        if(!req.body.lessons.includes(lessonName)) {
+          continue;
         }
+
+        delete server.lessons[lessonName];
       }
 
       return next();
