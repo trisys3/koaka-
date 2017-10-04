@@ -33,22 +33,14 @@ describe('A Koaka server', () => {
   });
   
   test('can kill 0 servers at a time', () => {
-    const ports = [
-      3000,
-      4000,
-      5000,
-    ];
+    const ports = [3000, 4000, 5000];
     const server = new Koaka({ports});
     server.kill();
     expect(server.ports).toHaveLength(3);
   });
   
   test('can kill 1 server at a time', () => {
-    const ports = [
-      3000,
-      4000,
-      5000,
-    ];
+    const ports = [3000, 4000, 5000];
     const killPort = 3000;
     const server = new Koaka({ports});
     server.kill(killPort);
@@ -56,11 +48,7 @@ describe('A Koaka server', () => {
   });
   
   test('can kill multiple servers at a time', () => {
-    const ports = [
-      3000,
-      4000,
-      5000,
-    ];
+    const ports = [3000, 4000, 5000];
     const killPorts = [3000, 4000];
     const server = new Koaka({ports});
     server.kill(killPorts);
