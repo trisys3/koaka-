@@ -1,7 +1,7 @@
 jest.mock('request-promise-native');
 
 // use quiz because jest is hogging the global test variable
-import quizzer from './test';
+import quizzer from './quiz';
 import * as nrc from 'node-run-cmd';
 import request from 'request-promise-native';
 
