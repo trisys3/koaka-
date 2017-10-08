@@ -139,6 +139,7 @@ exports.rules = {
         let: {after: true},
         else: {after: true},
         class: {after: true},
+        case: {after: true},
       },
     },
   ],
