@@ -121,7 +121,7 @@ describe('Testing', () => {
 
     test('fails if even 1 of the steps fails', () => {
       ctx.app.lessons['My Failing Test'] = failSteps;
-      ctx.request.body = {lesson: 'My Failing Test'};
+      ctx.path = '/My Failing Test';
 
       quiz(ctx, noop);
       expect(ctx.status).toBe(404);
