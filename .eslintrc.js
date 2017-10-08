@@ -85,7 +85,6 @@ exports.rules = {
   'no-useless-concat': 1,
   'no-useless-escape': 1,
   'no-useless-return': 1,
-  'prefer-promise-reject-errors': 2,
   radix: [2, 'as-needed'],
   'require-await': 1,
   'wrap-iife': 1,
