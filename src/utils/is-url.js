@@ -1,9 +1,4 @@
-const protocols = [
-  'http',
-  'https',
-  'ftp',
-  'ftps',
-];
+const protocols = ['http', 'https', 'ftp', 'ftps'];
 
 const protocolRegex = /[a-z]+:\/\//;
 const domainRegex = /^[^. /]+?\.[^. /]+?/;
