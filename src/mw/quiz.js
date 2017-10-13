@@ -22,26 +22,24 @@ export default () =>
       } else {
         steps = [];
       }
-      if(!steps.length) {
-        return next();
-      }
+    }
+    if(!steps.length) {
+      return next();
     }
 
     const lessonOut = ctx.body.lessons = [];
     const lessonPromises = steps.map((step, stepIndex) => new Promise(async (resolve, reject) => {
       let shell;
-      let type;
 
-      if(typeof step !== 'string') {
-        ({type, shell, step} = step);
+      if(step && typeof step !== 'string') {
+        ({shell, step} = step);
       }
 
-      if(!type) {
-        if(isUrl(step)) {
-          type = 'url';
-        } else if(isCommand(step)) {
-          type = 'command';
-        }
+      let type;
+      if(isUrl(step)) {
+        type = 'url';
+      } else if(isCommand(step)) {
+        type = 'command';
       }
 
       switch(type) {

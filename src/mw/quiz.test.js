@@ -1,5 +1,4 @@
 import quizzer from './quiz';
-import Koa from 'koa';
 
 const quiz = quizzer();
 
@@ -8,27 +7,57 @@ const noop = () => {
 };
 const ctx = {};
 
-describe('Testing', () => {
+describe('Quizzing', () => {
+  beforeEach(() => {
+    Object.assign(ctx, {app: {}, body: {}, status: 404});
+  });
+
+  test('when no lessons exists fails', async () => {
+    const stepName = 'My Nonexistent Lesson';
+    ctx.path = `/${stepName}`;
+
+    await quiz(ctx, noop);
+    return expect(ctx.status).toBe(404);
+  });
+
   describe('a lesson', () => {
     beforeEach(() => {
       Object.assign(ctx, {app: {}, body: {}, status: 404});
     });
 
-    test('which does not exist fails', () => {
+    test('which does not exist fails', async () => {
       const stepName = 'My Nonexistent Lesson';
       ctx.path = `/${stepName}`;
+      ctx.app.lessons = {'Some Existing Lesson': []};
 
-      quiz(ctx, noop);
-      expect(ctx.status).toBe(404);
+      await quiz(ctx, noop);
+      return expect(ctx.status).toBe(404);
     });
 
-    test('which exists but has no steps fails', () => {
+    test('which exists but has no steps fails', async () => {
       const stepName = 'My Existing Lesson';
       ctx.path = `/${stepName}`;
 
-      ctx.app = {lessons: {[stepName]: []}};
-      quiz(ctx, noop);
+      ctx.app.lessons = {[stepName]: []};
+      await quiz(ctx, noop);
       expect(ctx.status).toBe(404);
+
+      ctx.app.lessons = {[stepName]: null};
+      await quiz(ctx, noop);
+      return expect(ctx.status).toBe(404);
+    });
+
+    test('which has steps which are not strings fails', async () => {
+      const stepName = 'My Weird Lesson';
+      ctx.path = `/${stepName}`;
+
+      ctx.app.lessons = {[stepName]: 2};
+      await quiz(ctx, noop);
+      expect(ctx.status).toBe(404);
+
+      ctx.app.lessons = {[stepName]: {steps: 2}};
+      await quiz(ctx, noop);
+      return expect(ctx.status).toBe(404);
     });
   });
 
@@ -71,6 +100,7 @@ describe('Testing', () => {
       await quiz(ctx, noop);
       expect(ctx.status).toBe(200);
 
+      ctx.status = 404;
       ctx.app.lessons[stepName] = {step: command};
       await quiz(ctx, noop);
       return expect(ctx.status).toBe(200);
@@ -135,6 +165,8 @@ describe('Testing', () => {
       await quiz(ctx, noop);
       expect(ctx.status).toBe(200);
 
+      ctx.status = 404;
+
       ctx.app.lessons[stepName] = {step: url};
       await quiz(ctx, noop);
       return expect(ctx.status).toBe(200);
@@ -155,8 +187,10 @@ describe('Testing', () => {
   });
 
   describe('multiple commands &/or requests', () => {
-    const successSteps = ['github.com/trisys3/koaka-thing', 'echo Hello world!'];
-    const failSteps = ['github.com/trisys3/koaka-thing', 'cat nonexistent-file'];
+    const successUrl = 'github.com/trisys3/koaka-thing';
+    const failUrl = 'https://github.com/trisys3/nonexistent-repo';
+    const successCommand = 'echo Hello World!';
+    const failCommand = 'cat nonexistent-file';
 
     beforeEach(() => {
       Object.assign(ctx, {app: {lessons: {}}, status: 404});
@@ -164,18 +198,28 @@ describe('Testing', () => {
 
     test('succeeds if all steps succeed', async () => {
       const stepName = 'My Succeeding Test';
-      ctx.app.lessons[stepName] = successSteps;
       ctx.path = `/${stepName}`;
 
+      ctx.app.lessons[stepName] = [successUrl, successCommand];
+      await quiz(ctx, noop);
+      expect(ctx.status).toBe(200);
+
+      ctx.status = 404;
+
+      ctx.app.lessons[stepName] = [{step: successUrl}, {step: successCommand}];
       await quiz(ctx, noop);
       return expect(ctx.status).toBe(200);
     });
 
     test('fails if even 1 of the steps fails', async () => {
       const stepName = 'My Failing Test';
-      ctx.app.lessons[stepName] = failSteps;
       ctx.path = `/${stepName}`;
 
+      ctx.app.lessons[stepName] = [successUrl, failCommand];
+      await quiz(ctx, noop);
+      expect(ctx.status).toBe(404);
+
+      ctx.app.lessons[stepName] = [{step: successCommand}, {step: failUrl}];
       await quiz(ctx, noop);
       return expect(ctx.status).toBe(404);
     });
