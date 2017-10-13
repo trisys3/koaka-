@@ -1,4 +1,3 @@
-import {run as runCmd} from 'node-run-cmd';
 import request from 'request-promise-native';
 
 import {isUrl, isCommand} from '../utils';
