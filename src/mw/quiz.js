@@ -26,6 +26,7 @@ export default () =>
       return next();
     }
 
+    ctx.body = ctx.body || {};
     const lessonOut = ctx.body.lessons = [];
     const lessonPromises = steps.map((step, stepIndex) => new Promise(async (resolve, reject) => {
       let shell;

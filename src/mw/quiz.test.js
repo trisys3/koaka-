@@ -9,10 +9,10 @@ const ctx = {};
 
 describe('Quizzing', () => {
   beforeEach(() => {
-    Object.assign(ctx, {app: {}, body: {}, status: 404});
+    Object.assign(ctx, {app: {}, status: 404});
   });
 
-  test('when no lessons exists fails', async () => {
+  test('when no lessons exist fails', async () => {
     const stepName = 'My Nonexistent Lesson';
     ctx.path = `/${stepName}`;
 
@@ -22,7 +22,7 @@ describe('Quizzing', () => {
 
   describe('a lesson', () => {
     beforeEach(() => {
-      Object.assign(ctx, {app: {}, body: {}, status: 404});
+      Object.assign(ctx, {app: {}, status: 404});
     });
 
     test('which does not exist fails', async () => {
