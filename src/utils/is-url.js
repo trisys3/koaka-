@@ -1,7 +1,7 @@
 const protocols = ['http', 'https', 'ftp', 'ftps'];
 
-const protocolRegex = /[a-z]+:\/\//;
-const domainRegex = /^[^. /]+?\.[^. /]+?/;
+const protocolRegex = /^[a-z]+:\/\//;
+const domainRegex = /^(localhost|[^. /]+?\.[^. /]+?)/;
 
 export default url => {
   if(typeof url !== 'string') {
@@ -17,5 +17,9 @@ export default url => {
     [, url] = url.split(`${protocol}://`);
   }
 
-  return url.match(domainRegex);
+  if(url === 'localhost') {
+    return true;
+  }
+
+  return !!url.match(domainRegex);
 };

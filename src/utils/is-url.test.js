@@ -52,4 +52,14 @@ describe('a url', () => {
     const url = 'server';
     expect(isUrl(url)).not.toBeTruthy();
   });
+
+  test('can be "localhost"', () => {
+    const url = 'localhost';
+    expect(isUrl(url)).toBeTruthy();
+  });
+
+  test('can be "localhost" with a port', () => {
+    const url = 'localhost:3000';
+    expect(isUrl(url)).toBeTruthy();
+  });
 });
